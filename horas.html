@@ -1,0 +1,1221 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#050507" />
+  <meta name="description" content="Integration2U Dev Retainer — Tenha um desenvolvedor sênior na sua operação todo mês. Planos de 40, 90 ou 120 horas. Sem CLT, sem burocracia." />
+  <title>Integration2U — Dev na sua operação · Planos mensais</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='10' fill='%2300ff88'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #050507;
+      --bg-soft: #0a0a0e;
+      --surface: #101015;
+      --surface-2: #16161d;
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #f4f4f6;
+      --text-dim: #9b9ba6;
+      --text-faint: #5c5c66;
+      --accent: #00ff88;
+      --accent-dim: rgba(0, 255, 136, 0.12);
+      --accent-glow: rgba(0, 255, 136, 0.35);
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --container: min(1240px, 90vw);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: auto; }
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-weight: 400;
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection { background: var(--accent); color: #04130b; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; }
+
+    @media (hover: hover) and (pointer: fine) {
+      body { cursor: none; }
+      a, button, input, textarea, [data-cursor] { cursor: none; }
+    }
+
+    #webgl { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    .grain {
+      position: fixed; inset: -100%; z-index: 1; pointer-events: none; opacity: 0.05;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+      animation: grain 0.9s steps(4) infinite;
+    }
+    @keyframes grain {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-3%, 2%); }
+      50% { transform: translate(2%, -3%); }
+      75% { transform: translate(-2%, -2%); }
+      100% { transform: translate(3%, 3%); }
+    }
+
+    main { position: relative; z-index: 2; }
+
+    .cursor-dot, .cursor-ring {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      pointer-events: none; border-radius: 50%; will-change: transform;
+    }
+    .cursor-dot { width: 8px; height: 8px; background: var(--accent); transform: translate(-50%, -50%); }
+    .cursor-ring {
+      width: 44px; height: 44px; border: 1px solid rgba(0, 255, 136, 0.5);
+      display: flex; align-items: center; justify-content: center;
+      transform: translate(-50%, -50%);
+      transition: background-color 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+    }
+    .cursor-label {
+      font-family: var(--font-display); font-size: 11px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; color: #04130b;
+      opacity: 0; white-space: nowrap; transition: opacity 0.25s;
+    }
+    .cursor-ring.is-active { background: var(--accent); border-color: var(--accent); }
+    .cursor-ring.is-active .cursor-label { opacity: 1; }
+    .cursor-ring.is-hidden, .cursor-dot.is-hidden { opacity: 0; }
+    @media (hover: none), (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } }
+
+    .preloader {
+      position: fixed; inset: 0; z-index: 10000; background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 24px;
+    }
+    .preloader__logo {
+      font-family: var(--font-display); font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 700; letter-spacing: -0.02em; overflow: hidden;
+    }
+    .preloader__logo span { display: inline-block; }
+    .preloader__bar { width: min(280px, 60vw); height: 1px; background: var(--line); overflow: hidden; }
+    .preloader__bar-fill { width: 100%; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); }
+    .preloader__count { font-family: var(--font-display); font-size: 12px; letter-spacing: 0.2em; color: var(--text-faint); }
+
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 28px 0;
+      transition: padding 0.4s var(--ease-out), background 0.4s, backdrop-filter 0.4s;
+    }
+    .header.is-scrolled {
+      padding: 16px 0;
+      background: rgba(5, 5, 7, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--line);
+    }
+    .header__inner {
+      width: var(--container); margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo {
+      font-family: var(--font-display); font-size: 1.15rem; font-weight: 700;
+      letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px;
+    }
+    .logo__pulse {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.6); opacity: 0.5; }
+    }
+    .nav { display: flex; gap: 36px; }
+    .nav a {
+      font-size: 0.82rem; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-dim); position: relative; transition: color 0.3s;
+    }
+    .nav a::after {
+      content: ''; position: absolute; left: 0; bottom: -6px;
+      width: 100%; height: 1px; background: var(--accent);
+      transform: scaleX(0); transform-origin: right;
+      transition: transform 0.4s var(--ease-out);
+    }
+    .nav a:hover { color: var(--text); }
+    .nav a:hover::after { transform: scaleX(1); transform-origin: left; }
+    @media (max-width: 768px) { .nav { display: none; } }
+
+    .btn {
+      position: relative; display: inline-flex; align-items: center; gap: 12px;
+      font-family: var(--font-display); font-size: 0.9rem; font-weight: 600;
+      letter-spacing: 0.04em; padding: 18px 36px; border-radius: 100px;
+      border: none; overflow: hidden; isolation: isolate;
+      transition: color 0.4s var(--ease-out); will-change: transform;
+    }
+    .btn--primary { background: var(--accent); color: #04130b; }
+    .btn--primary::before {
+      content: ''; position: absolute; inset: 0; z-index: -1;
+      background: #fff; border-radius: 100px;
+      transform: translateY(101%); transition: transform 0.5s var(--ease-out);
+    }
+    .btn--primary:hover::before { transform: translateY(0); }
+    .btn--ghost {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--line);
+      transition: border-color 0.3s, color 0.4s var(--ease-out);
+    }
+    .btn--ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .btn--sm { padding: 12px 24px; font-size: 0.8rem; }
+    .btn .arrow { transition: transform 0.4s var(--ease-out); }
+    .btn:hover .arrow { transform: translateX(5px); }
+
+    .hero {
+      min-height: 100svh; display: flex; flex-direction: column;
+      justify-content: center; position: relative; padding: 140px 0 80px;
+    }
+    .hero__inner { width: var(--container); margin: 0 auto; }
+    .hero__badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 0.78rem; font-weight: 500; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-dim);
+      padding: 10px 20px; border: 1px solid var(--line); border-radius: 100px;
+      margin-bottom: 40px; backdrop-filter: blur(8px);
+    }
+    .hero__badge .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 10px var(--accent-glow);
+    }
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(2.6rem, 7.4vw, 6.4rem);
+      font-weight: 700; line-height: 1.02; letter-spacing: -0.035em;
+      margin-bottom: 36px; max-width: 14ch;
+    }
+    .hero__title .accent { color: var(--accent); }
+    .hero__title .outline {
+      color: transparent;
+      -webkit-text-stroke: 1.5px rgba(244, 244, 246, 0.85);
+    }
+    .hero__sub {
+      font-size: clamp(1rem, 1.5vw, 1.2rem); font-weight: 300;
+      color: var(--text-dim); max-width: 48ch; margin-bottom: 48px;
+    }
+    .hero__sub strong { color: var(--text); font-weight: 500; }
+    .hero__cta-row { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+    .hero__scroll {
+      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      font-size: 0.68rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-faint);
+    }
+    .hero__scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollLine 2s var(--ease-out) infinite; transform-origin: top;
+    }
+    @keyframes scrollLine {
+      0% { transform: scaleY(0); }
+      45% { transform: scaleY(1); transform-origin: top; }
+      55% { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+    @media (max-width: 768px) { .hero__scroll { display: none; } }
+
+    .reveal-line { display: block; overflow: hidden; }
+    .reveal-line > span { display: block; will-change: transform; }
+
+    .ticker-section {
+      padding: 48px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+      overflow: hidden; position: relative;
+      background: rgba(10, 10, 14, 0.45); backdrop-filter: blur(6px);
+    }
+    .ticker-section::before, .ticker-section::after {
+      content: ''; position: absolute; top: 0; bottom: 0; width: 160px; z-index: 2; pointer-events: none;
+    }
+    .ticker-section::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
+    .ticker-section::after { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
+    .ticker-label {
+      text-align: center; font-size: 0.72rem; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--text-faint); margin-bottom: 32px;
+    }
+    .ticker { display: flex; width: max-content; will-change: transform; }
+    .ticker__group { display: flex; align-items: center; flex-shrink: 0; }
+    .ticker__item {
+      font-family: var(--font-display); font-size: clamp(1.2rem, 2.8vw, 2rem);
+      font-weight: 600; letter-spacing: -0.02em; color: var(--text-faint);
+      padding: 0 48px; white-space: nowrap;
+      transition: color 0.4s, text-shadow 0.4s;
+      display: flex; align-items: center; gap: 48px;
+    }
+    .ticker__item:hover { color: var(--accent); text-shadow: 0 0 30px var(--accent-glow); }
+    .ticker__item::after { content: '◆'; font-size: 0.55em; color: var(--accent); opacity: 0.5; }
+
+    .section { padding: clamp(110px, 14vw, 190px) 0; position: relative; }
+    .section__inner { width: var(--container); margin: 0 auto; }
+    .section__head { margin-bottom: clamp(56px, 7vw, 96px); }
+    .section__tag {
+      display: inline-flex; align-items: center; gap: 12px;
+      font-size: 0.74rem; font-weight: 600; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 24px;
+    }
+    .section__tag::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+    .section__title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.6vw, 3.8rem);
+      font-weight: 700; line-height: 1.06; letter-spacing: -0.03em; max-width: 22ch;
+    }
+    .section__title .dim { color: var(--text-faint); }
+    .section__desc {
+      margin-top: 24px; font-size: 1.05rem; font-weight: 300;
+      color: var(--text-dim); max-width: 52ch;
+    }
+
+    /* HOW IT WORKS */
+    .steps {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    @media (max-width: 980px) { .steps { grid-template-columns: 1fr; } }
+
+    .step {
+      position: relative; padding: clamp(32px, 3vw, 44px);
+      background: linear-gradient(160deg, var(--surface), var(--bg-soft));
+      border: 1px solid var(--line); border-radius: 20px;
+      transition: border-color 0.5s var(--ease-out);
+    }
+    .step:hover { border-color: rgba(0, 255, 136, 0.35); }
+    .step__num {
+      font-family: var(--font-display); font-size: 3rem; font-weight: 700;
+      color: var(--accent); opacity: 0.25; line-height: 1; margin-bottom: 20px;
+    }
+    .step__title {
+      font-family: var(--font-display); font-size: 1.25rem; font-weight: 600;
+      letter-spacing: -0.02em; margin-bottom: 12px;
+    }
+    .step__desc { font-size: 0.92rem; font-weight: 300; color: var(--text-dim); }
+
+    /* PRICING */
+    .pricing { position: relative; }
+    .pricing__grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: stretch;
+    }
+    @media (max-width: 980px) { .pricing__grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; } }
+
+    .plan {
+      position: relative; display: flex; flex-direction: column;
+      background: linear-gradient(165deg, var(--surface), var(--bg-soft));
+      border: 1px solid var(--line); border-radius: 24px;
+      padding: clamp(36px, 3.5vw, 52px);
+      overflow: hidden; isolation: isolate;
+      transition: border-color 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+      will-change: transform;
+    }
+    .plan::before {
+      content: ''; position: absolute; inset: 0; z-index: -1;
+      background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), var(--accent-dim), transparent 65%);
+      opacity: 0; transition: opacity 0.5s;
+    }
+    .plan:hover { border-color: rgba(0, 255, 136, 0.35); }
+    .plan:hover::before { opacity: 1; }
+
+    .plan--featured {
+      border-color: rgba(0, 255, 136, 0.45);
+      background: linear-gradient(165deg, rgba(0, 255, 136, 0.06), var(--surface));
+      transform: scale(1.03);
+      box-shadow: 0 24px 80px -20px rgba(0, 255, 136, 0.15);
+    }
+    @media (max-width: 980px) { .plan--featured { transform: none; } }
+
+    .plan__badge {
+      position: absolute; top: 24px; right: 24px;
+      font-family: var(--font-display); font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: #04130b; background: var(--accent);
+      padding: 6px 14px; border-radius: 100px;
+    }
+    .plan__hours {
+      font-family: var(--font-display); font-size: clamp(2.8rem, 5vw, 4rem);
+      font-weight: 700; letter-spacing: -0.04em; line-height: 1;
+      margin-bottom: 4px;
+    }
+    .plan__hours span { font-size: 0.45em; color: var(--text-dim); font-weight: 500; }
+    .plan__name {
+      font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-dim);
+      margin-bottom: 28px;
+    }
+    .plan__price {
+      display: flex; align-items: baseline; gap: 6px; margin-bottom: 8px;
+    }
+    .plan__price-value {
+      font-family: var(--font-display); font-size: clamp(2rem, 3.5vw, 2.6rem);
+      font-weight: 700; letter-spacing: -0.03em;
+    }
+    .plan__price-period { font-size: 0.9rem; color: var(--text-faint); }
+    .plan__rate {
+      font-size: 0.82rem; color: var(--accent); margin-bottom: 32px;
+      padding-bottom: 32px; border-bottom: 1px solid var(--line);
+    }
+    .plan__list {
+      list-style: none; display: flex; flex-direction: column; gap: 14px;
+      margin-bottom: 36px; flex: 1;
+    }
+    .plan__list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 0.88rem; color: var(--text-dim);
+    }
+    .plan__list li::before {
+      content: '✓'; flex-shrink: 0;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent-dim); border: 1px solid rgba(0, 255, 136, 0.35);
+      display: grid; place-items: center; font-size: 10px; color: var(--accent);
+    }
+    .plan__cta { width: 100%; justify-content: center; margin-top: auto; }
+
+    .pricing__note {
+      margin-top: 48px; text-align: center;
+      font-size: 0.85rem; color: var(--text-faint);
+    }
+    .pricing__note strong { color: var(--text-dim); font-weight: 500; }
+
+    /* COMPARE / BENEFITS */
+    .benefits {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
+    }
+    @media (max-width: 720px) { .benefits { grid-template-columns: 1fr; } }
+
+    .benefit {
+      display: flex; gap: 20px; padding: 28px;
+      border: 1px solid var(--line); border-radius: 16px;
+      background: rgba(16, 16, 21, 0.5);
+      transition: border-color 0.4s;
+    }
+    .benefit:hover { border-color: rgba(0, 255, 136, 0.25); }
+    .benefit__icon {
+      width: 48px; height: 48px; flex-shrink: 0; border-radius: 12px;
+      background: var(--accent-dim); border: 1px solid rgba(0, 255, 136, 0.25);
+      display: grid; place-items: center; font-size: 1.3rem;
+    }
+    .benefit__title {
+      font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .benefit__desc { font-size: 0.88rem; color: var(--text-dim); font-weight: 300; }
+
+    .metrics {
+      margin-top: clamp(72px, 8vw, 120px);
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--line);
+    }
+    @media (max-width: 720px) { .metrics { grid-template-columns: 1fr; } }
+    .metric { padding: 44px 32px; border-bottom: 1px solid var(--line); text-align: center; }
+    .metric + .metric { border-left: 1px solid var(--line); }
+    @media (max-width: 720px) { .metric + .metric { border-left: none; } }
+    .metric__value {
+      font-family: var(--font-display); font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+      font-weight: 700; letter-spacing: -0.03em; color: var(--accent);
+      line-height: 1; margin-bottom: 10px;
+    }
+    .metric__label {
+      font-size: 0.78rem; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--text-faint);
+    }
+
+    .cta { position: relative; }
+    .cta__inner {
+      width: var(--container); margin: 0 auto;
+      background: linear-gradient(165deg, var(--surface) 0%, var(--bg-soft) 100%);
+      border: 1px solid var(--line); border-radius: 28px;
+      padding: clamp(48px, 6vw, 96px);
+      position: relative; overflow: hidden;
+      display: grid; grid-template-columns: 1.1fr 1fr;
+      gap: clamp(48px, 6vw, 96px);
+    }
+    @media (max-width: 980px) { .cta__inner { grid-template-columns: 1fr; } }
+    .cta__inner::before {
+      content: ''; position: absolute; top: -40%; right: -20%;
+      width: 60%; aspect-ratio: 1;
+      background: radial-gradient(circle, var(--accent-dim), transparent 70%);
+      pointer-events: none;
+    }
+    .cta__title {
+      font-family: var(--font-display); font-size: clamp(2.2rem, 4.8vw, 4rem);
+      font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 28px;
+    }
+    .cta__title .accent { color: var(--accent); }
+    .cta__text { font-weight: 300; color: var(--text-dim); max-width: 42ch; margin-bottom: 36px; }
+    .cta__bullets { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .cta__bullets li {
+      display: flex; align-items: center; gap: 14px;
+      font-size: 0.92rem; color: var(--text-dim);
+    }
+    .cta__bullets .check {
+      width: 22px; height: 22px; flex-shrink: 0; border-radius: 50%;
+      background: var(--accent-dim); border: 1px solid rgba(0, 255, 136, 0.4);
+      display: grid; place-items: center; font-size: 11px; color: var(--accent);
+    }
+
+    .form { display: flex; flex-direction: column; gap: 20px; position: relative; z-index: 1; }
+    .field { position: relative; }
+    .field input, .field textarea, .field select {
+      width: 100%; background: transparent; border: none;
+      border-bottom: 1px solid var(--line);
+      padding: 18px 4px 14px;
+      font-family: var(--font-body); font-size: 0.96rem; color: var(--text);
+      outline: none; resize: none; transition: border-color 0.3s;
+      appearance: none;
+    }
+    .field select option { background: var(--surface); color: var(--text); }
+    .field label {
+      position: absolute; left: 4px; top: 18px;
+      font-size: 0.92rem; color: var(--text-faint);
+      pointer-events: none; transition: all 0.3s var(--ease-out);
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); }
+    .field input:focus + label,
+    .field input:not(:placeholder-shown) + label,
+    .field textarea:focus + label,
+    .field textarea:not(:placeholder-shown) + label,
+    .field select:focus + label,
+    .field select:valid + label {
+      top: -8px; font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent);
+    }
+    .field__bar {
+      position: absolute; left: 0; bottom: 0; width: 100%; height: 1px;
+      background: var(--accent); transform: scaleX(0);
+      transform-origin: left; transition: transform 0.5s var(--ease-out);
+    }
+    .field input:focus ~ .field__bar,
+    .field textarea:focus ~ .field__bar,
+    .field select:focus ~ .field__bar { transform: scaleX(1); }
+    .form__submit { margin-top: 12px; justify-content: center; }
+    .form__note { font-size: 0.74rem; color: var(--text-faint); text-align: center; }
+    .form__success {
+      position: absolute; inset: 0; z-index: 2; display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; gap: 16px;
+    }
+    .form__success .big {
+      font-family: var(--font-display); font-size: 1.6rem;
+      font-weight: 700; color: var(--accent);
+    }
+    .form.is-sent .form__success { display: flex; }
+    .form.is-sent > *:not(.form__success) { visibility: hidden; }
+
+    .footer {
+      border-top: 1px solid var(--line); padding: 48px 0;
+      position: relative; z-index: 2;
+      background: rgba(5, 5, 7, 0.6); backdrop-filter: blur(8px);
+    }
+    .footer__inner {
+      width: var(--container); margin: 0 auto;
+      display: flex; flex-wrap: wrap; gap: 20px;
+      align-items: center; justify-content: space-between;
+      font-size: 0.8rem; color: var(--text-faint);
+    }
+    .footer__links { display: flex; gap: 28px; }
+    .footer__links a { transition: color 0.3s; }
+    .footer__links a:hover { color: var(--accent); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001s !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="preloader" id="preloader">
+    <div class="preloader__logo"><span>Integration<em style="color:var(--accent);font-style:normal">2U</em></span></div>
+    <div class="preloader__bar"><div class="preloader__bar-fill" id="preloaderFill"></div></div>
+    <div class="preloader__count" id="preloaderCount">00</div>
+  </div>
+
+  <canvas id="webgl"></canvas>
+  <div class="grain"></div>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"><span class="cursor-label" id="cursorLabel"></span></div>
+
+  <header class="header" id="header">
+    <div class="header__inner">
+      <a href="/" class="logo" data-cursor>
+        <span class="logo__pulse"></span>
+        Integration<span style="color:var(--accent)">2U</span>
+      </a>
+      <nav class="nav">
+        <a href="#como-funciona" data-cursor>Como funciona</a>
+        <a href="#planos" data-cursor>Planos</a>
+        <a href="#contato" data-cursor>Contato</a>
+      </nav>
+      <a href="#planos" class="btn btn--primary btn--sm" data-cursor="Ver!" data-magnetic>
+        Ver Planos
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero__inner">
+        <div class="hero__badge" data-reveal>
+          <span class="dot"></span>
+          Dev Retainer · Mensal · Sem CLT
+        </div>
+        <h1 class="hero__title" id="heroTitle">
+          <span class="reveal-line"><span>Um dev na sua</span></span>
+          <span class="reveal-line"><span class="outline">operação,</span></span>
+          <span class="reveal-line"><span><span class="accent">todo mês</span>.</span></span>
+        </h1>
+        <p class="hero__sub" data-reveal>
+          Pague mensalmente por horas de desenvolvimento e tenha um profissional sênior
+          <strong>integrado ao seu time</strong> — sem contratação, sem burocracia, sem surpresa no fim do mês.
+        </p>
+        <div class="hero__cta-row" data-reveal>
+          <a href="#planos" class="btn btn--primary" data-cursor="Escolher" data-magnetic>
+            Escolher meu plano
+            <span class="arrow">→</span>
+          </a>
+          <a href="#como-funciona" class="btn btn--ghost" data-cursor="Entender" data-magnetic>
+            Como funciona
+          </a>
+        </div>
+      </div>
+      <div class="hero__scroll">
+        <span>Scroll</span>
+        <div class="hero__scroll-line"></div>
+      </div>
+    </section>
+
+    <section class="ticker-section" id="stack">
+      <p class="ticker-label" data-reveal>Stack que entregamos no dia a dia</p>
+      <div class="ticker" id="ticker">
+        <div class="ticker__group">
+          <span class="ticker__item" data-cursor>TypeScript</span>
+          <span class="ticker__item" data-cursor>React</span>
+          <span class="ticker__item" data-cursor>Node.js</span>
+          <span class="ticker__item" data-cursor>n8n</span>
+          <span class="ticker__item" data-cursor>APIs REST</span>
+          <span class="ticker__item" data-cursor>Supabase</span>
+          <span class="ticker__item" data-cursor>WhatsApp API</span>
+        </div>
+        <div class="ticker__group" aria-hidden="true">
+          <span class="ticker__item">TypeScript</span>
+          <span class="ticker__item">React</span>
+          <span class="ticker__item">Node.js</span>
+          <span class="ticker__item">n8n</span>
+          <span class="ticker__item">APIs REST</span>
+          <span class="ticker__item">Supabase</span>
+          <span class="ticker__item">WhatsApp API</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="como-funciona">
+      <div class="section__inner">
+        <div class="section__head">
+          <div class="section__tag" data-reveal>Como funciona</div>
+          <h2 class="section__title">
+            <span class="reveal-line"><span>Como ter um dev</span></span>
+            <span class="reveal-line"><span class="dim">sem contratar um dev.</span></span>
+          </h2>
+          <p class="section__desc" data-reveal>
+            Você escolhe o pacote de horas, a gente aloca um desenvolvedor sênior no seu backlog.
+            Funciona como uma assinatura: previsível, flexível e cancelável.
+          </p>
+        </div>
+
+        <div class="steps" id="steps">
+          <article class="step" data-reveal>
+            <div class="step__num">01</div>
+            <h3 class="step__title">Escolha o plano</h3>
+            <p class="step__desc">
+              40, 90 ou 120 horas por mês. Cada plano cobre um ritmo diferente de entrega —
+              de manutenção contínua a desenvolvimento em tempo quase integral.
+            </p>
+          </article>
+          <article class="step" data-reveal>
+            <div class="step__num">02</div>
+            <h3 class="step__title">Alinhamos o backlog</h3>
+            <p class="step__desc">
+              Kickoff de 1h para mapear prioridades, ferramentas e canais de comunicação.
+              Você manda tarefas via Slack, Notion ou WhatsApp — como preferir.
+            </p>
+          </article>
+          <article class="step" data-reveal>
+            <div class="step__num">03</div>
+            <h3 class="step__title">Dev entrega todo mês</h3>
+            <p class="step__desc">
+              Horas consumidas com transparência. Relatório semanal do que foi feito.
+              Horas não usadas acumulam por até 30 dias no plano Growth e Scale.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section pricing" id="planos">
+      <div class="section__inner">
+        <div class="section__head">
+          <div class="section__tag" data-reveal>Planos mensais</div>
+          <h2 class="section__title">
+            <span class="reveal-line"><span>Escolha quantas horas</span></span>
+            <span class="reveal-line"><span class="dim">sua operação precisa.</span></span>
+          </h2>
+        </div>
+
+        <div class="pricing__grid" id="plans">
+          <article class="plan" data-cursor="Starter" data-tilt>
+            <div class="plan__hours">40<span>h/mês</span></div>
+            <div class="plan__name">Starter</div>
+            <div class="plan__price">
+              <span class="plan__price-value">R$ 5.800</span>
+              <span class="plan__price-period">/mês</span>
+            </div>
+            <p class="plan__rate">~R$ 145/h · ideal para manutenção</p>
+            <ul class="plan__list">
+              <li>~10 horas por semana</li>
+              <li>Dev full-stack alocado</li>
+              <li>Backlog compartilhado (Notion/Slack)</li>
+              <li>Correções, melhorias e pequenas features</li>
+              <li>Relatório semanal de horas</li>
+              <li>Resposta em até 24h úteis</li>
+            </ul>
+            <a href="#contato" class="btn btn--ghost plan__cta" data-cursor="Quero!" data-magnetic data-plan="Starter 40h">
+              Começar com 40h
+            </a>
+          </article>
+
+          <article class="plan plan--featured" data-cursor="Popular!" data-tilt>
+            <span class="plan__badge">Mais popular</span>
+            <div class="plan__hours">90<span>h/mês</span></div>
+            <div class="plan__name">Growth</div>
+            <div class="plan__price">
+              <span class="plan__price-value">R$ 11.900</span>
+              <span class="plan__price-period">/mês</span>
+            </div>
+            <p class="plan__rate">~R$ 132/h · melhor custo-benefício</p>
+            <ul class="plan__list">
+              <li>~22 horas por semana</li>
+              <li>Dev sênior + code review</li>
+              <li>Sprint quinzenal com entregas</li>
+              <li>Integrações, automações e APIs</li>
+              <li>Horas não usadas acumulam 30 dias</li>
+              <li>Resposta em até 8h úteis</li>
+            </ul>
+            <a href="#contato" class="btn btn--primary plan__cta" data-cursor="Quero!" data-magnetic data-plan="Growth 90h">
+              Escolher Growth
+              <span class="arrow">→</span>
+            </a>
+          </article>
+
+          <article class="plan" data-cursor="Scale" data-tilt>
+            <div class="plan__hours">120<span>h/mês</span></div>
+            <div class="plan__name">Scale</div>
+            <div class="plan__price">
+              <span class="plan__price-value">R$ 14.800</span>
+              <span class="plan__price-period">/mês</span>
+            </div>
+            <p class="plan__rate">~R$ 123/h · ritmo de período integral</p>
+            <ul class="plan__list">
+              <li>~30 horas por semana</li>
+              <li>Dev sênior dedicado ao seu produto</li>
+              <li>Arquitetura e liderança técnica</li>
+              <li>Roadmap trimestral + priorização</li>
+              <li>Horas não usadas acumulam 30 dias</li>
+              <li>SLA de resposta em 4h úteis</li>
+            </ul>
+            <a href="#contato" class="btn btn--ghost plan__cta" data-cursor="Quero!" data-magnetic data-plan="Scale 120h">
+              Escalar com 120h
+            </a>
+          </article>
+        </div>
+
+        <p class="pricing__note" data-reveal>
+          <strong>Contrato mínimo de 3 meses.</strong> Cancelamento com 30 dias de aviso.
+          Precisa de volume maior? <a href="#contato" style="color:var(--accent)" data-cursor>Fale conosco</a> para plano customizado.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="vantagens">
+      <div class="section__inner">
+        <div class="section__head">
+          <div class="section__tag" data-reveal>Por que assinar</div>
+          <h2 class="section__title">
+            <span class="reveal-line"><span>Dev interno,</span></span>
+            <span class="reveal-line"><span class="dim">sem o peso de CLT.</span></span>
+          </h2>
+        </div>
+
+        <div class="benefits">
+          <article class="benefit" data-reveal>
+            <div class="benefit__icon">💰</div>
+            <div>
+              <h3 class="benefit__title">Custo previsível</h3>
+              <p class="benefit__desc">Valor fixo mensal. Sem 13º, férias, encargos ou equipamento. Você sabe exatamente quanto paga.</p>
+            </div>
+          </article>
+          <article class="benefit" data-reveal>
+            <div class="benefit__icon">⚡</div>
+            <div>
+              <h3 class="benefit__title">Começa em dias, não meses</h3>
+              <p class="benefit__desc">Sem processo seletivo de 60 dias. Kickoff na semana seguinte à assinatura do contrato.</p>
+            </div>
+          </article>
+          <article class="benefit" data-reveal>
+            <div class="benefit__icon">🔄</div>
+            <div>
+              <h3 class="benefit__title">Flexível e escalável</h3>
+              <p class="benefit__desc">Aumente ou reduza o plano conforme a demanda. Sem demissão, sem passivo trabalhista.</p>
+            </div>
+          </article>
+          <article class="benefit" data-reveal>
+            <div class="benefit__icon">🎯</div>
+            <div>
+              <h3 class="benefit__title">Foco em entrega</h3>
+              <p class="benefit__desc">Horas 100% produtivas no seu backlog. Automações, integrações, features — o que mover o negócio.</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="metrics" id="metrics">
+          <div class="metric">
+            <div class="metric__value"><span data-count="3">0</span>x</div>
+            <div class="metric__label">Mais barato que CLT sênior</div>
+          </div>
+          <div class="metric">
+            <div class="metric__value"><span data-count="7">0</span>d</div>
+            <div class="metric__label">Para começar a entregar</div>
+          </div>
+          <div class="metric">
+            <div class="metric__value"><span data-count="100">0</span>%</div>
+            <div class="metric__label">Horas rastreadas e reportadas</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cta" id="contato">
+      <div class="cta__inner">
+        <div>
+          <div class="section__tag" data-reveal>Próximo passo</div>
+          <h2 class="cta__title">
+            <span class="reveal-line"><span>Pronto para ter um dev</span></span>
+            <span class="reveal-line"><span>na sua <span class="accent">operação</span>?</span></span>
+          </h2>
+          <p class="cta__text" data-reveal>
+            Preencha o formulário e agendamos uma call de 20 minutos para entender
+            sua operação e indicar o plano ideal — <strong style="color:var(--text)">sem compromisso</strong>.
+          </p>
+          <ul class="cta__bullets">
+            <li data-reveal><span class="check">✓</span> Análise do seu backlog atual</li>
+            <li data-reveal><span class="check">✓</span> Recomendação de plano personalizada</li>
+            <li data-reveal><span class="check">✓</span> Proposta com escopo e cronograma</li>
+          </ul>
+        </div>
+
+        <form class="form" id="leadForm" novalidate>
+          <div class="field" data-reveal>
+            <input type="text" id="fName" name="name" placeholder=" " required autocomplete="name" />
+            <label for="fName">Seu nome</label>
+            <span class="field__bar"></span>
+          </div>
+          <div class="field" data-reveal>
+            <input type="email" id="fEmail" name="email" placeholder=" " required autocomplete="email" />
+            <label for="fEmail">E-mail corporativo</label>
+            <span class="field__bar"></span>
+          </div>
+          <div class="field" data-reveal>
+            <input type="tel" id="fPhone" name="phone" placeholder=" " autocomplete="tel" />
+            <label for="fPhone">WhatsApp</label>
+            <span class="field__bar"></span>
+          </div>
+          <div class="field" data-reveal>
+            <select id="fPlan" name="plan" required>
+              <option value="" disabled selected></option>
+              <option value="Starter — 40h/mês (R$ 5.800)">Starter — 40h/mês (R$ 5.800)</option>
+              <option value="Growth — 90h/mês (R$ 11.900)">Growth — 90h/mês (R$ 11.900)</option>
+              <option value="Scale — 120h/mês (R$ 14.800)">Scale — 120h/mês (R$ 14.800)</option>
+              <option value="Ainda não sei — quero orientação">Ainda não sei — quero orientação</option>
+            </select>
+            <label for="fPlan">Plano de interesse</label>
+            <span class="field__bar"></span>
+          </div>
+          <div class="field" data-reveal>
+            <textarea id="fMsg" name="message" rows="3" placeholder=" "></textarea>
+            <label for="fMsg">O que você precisa desenvolver?</label>
+            <span class="field__bar"></span>
+          </div>
+          <button type="submit" class="btn btn--primary form__submit" data-cursor="Enviar" data-magnetic data-reveal>
+            Quero um dev na minha operação
+            <span class="arrow">→</span>
+          </button>
+          <p class="form__note" data-reveal>Resposta em até 24h · Sem compromisso</p>
+
+          <div class="form__success">
+            <div class="big">Recebido! 🚀</div>
+            <p style="color:var(--text-dim);max-width:30ch">
+              Vamos analisar sua demanda e retornamos em até 24h com os próximos passos.
+            </p>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <span>© 2026 Integration2U — Dev Retainer</span>
+      <div class="footer__links">
+        <a href="/" data-cursor>Automações</a>
+        <a href="#planos" data-cursor>Planos</a>
+        <a href="#contato" data-cursor>Contato</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const canvas = document.getElementById('webgl');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x050507, 0.045);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.z = 14;
+
+    const NODE_COUNT = window.innerWidth < 768 ? 110 : 220;
+    const RANGE = 11;
+    const CONNECT_DIST = 3.1;
+
+    const basePositions = new Float32Array(NODE_COUNT * 3);
+    const phases = new Float32Array(NODE_COUNT * 3);
+    for (let i = 0; i < NODE_COUNT; i++) {
+      basePositions[i * 3]     = (Math.random() - 0.5) * RANGE * 2.2;
+      basePositions[i * 3 + 1] = (Math.random() - 0.5) * RANGE * 1.3;
+      basePositions[i * 3 + 2] = (Math.random() - 0.5) * RANGE;
+      phases[i * 3]     = Math.random() * Math.PI * 2;
+      phases[i * 3 + 1] = Math.random() * Math.PI * 2;
+      phases[i * 3 + 2] = Math.random() * Math.PI * 2;
+    }
+
+    const pointsGeo = new THREE.BufferGeometry();
+    const livePositions = basePositions.slice();
+    pointsGeo.setAttribute('position', new THREE.BufferAttribute(livePositions, 3));
+
+    const pointsMat = new THREE.PointsMaterial({
+      color: 0x00ff88, size: 0.07, transparent: true, opacity: 0.9,
+      sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
+    });
+    const points = new THREE.Points(pointsGeo, pointsMat);
+
+    const pairs = [];
+    for (let i = 0; i < NODE_COUNT; i++) {
+      for (let j = i + 1; j < NODE_COUNT; j++) {
+        const dx = basePositions[i * 3] - basePositions[j * 3];
+        const dy = basePositions[i * 3 + 1] - basePositions[j * 3 + 1];
+        const dz = basePositions[i * 3 + 2] - basePositions[j * 3 + 2];
+        if (Math.sqrt(dx * dx + dy * dy + dz * dz) < CONNECT_DIST) pairs.push(i, j);
+      }
+    }
+    const linePositions = new Float32Array(pairs.length * 3);
+    const linesGeo = new THREE.BufferGeometry();
+    linesGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    const linesMat = new THREE.LineBasicMaterial({
+      color: 0x00ff88, transparent: true, opacity: 0.10,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+    });
+    const lines = new THREE.LineSegments(linesGeo, linesMat);
+
+    const network = new THREE.Group();
+    network.add(points, lines);
+    scene.add(network);
+
+    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+    window.addEventListener('pointermove', (e) => {
+      mouse.tx = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.ty = -((e.clientY / window.innerHeight) * 2 - 1);
+    });
+
+    let scrollProgress = 0;
+    const updateScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      scrollProgress = max > 0 ? window.scrollY / max : 0;
+    };
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    updateScroll();
+
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      if (!prefersReducedMotion) {
+        for (let i = 0; i < NODE_COUNT; i++) {
+          const i3 = i * 3;
+          livePositions[i3]     = basePositions[i3]     + Math.sin(t * 0.5 + phases[i3]) * 0.45;
+          livePositions[i3 + 1] = basePositions[i3 + 1] + Math.cos(t * 0.4 + phases[i3 + 1]) * 0.45;
+          livePositions[i3 + 2] = basePositions[i3 + 2] + Math.sin(t * 0.3 + phases[i3 + 2]) * 0.45;
+        }
+        pointsGeo.attributes.position.needsUpdate = true;
+        for (let p = 0; p < pairs.length; p++) {
+          const idx = pairs[p] * 3;
+          linePositions[p * 3]     = livePositions[idx];
+          linePositions[p * 3 + 1] = livePositions[idx + 1];
+          linePositions[p * 3 + 2] = livePositions[idx + 2];
+        }
+        linesGeo.attributes.position.needsUpdate = true;
+      }
+
+      mouse.x += (mouse.tx - mouse.x) * 0.04;
+      mouse.y += (mouse.ty - mouse.y) * 0.04;
+      network.rotation.y = mouse.x * 0.18 + scrollProgress * Math.PI * 0.6;
+      network.rotation.x = -mouse.y * 0.12 + scrollProgress * 0.45;
+      camera.position.z = 14 - scrollProgress * 6;
+      camera.position.y = -scrollProgress * 2;
+      network.scale.setScalar(1 + scrollProgress * 0.35);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+
+  <script>
+    (() => {
+      gsap.registerPlugin(ScrollTrigger);
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+      if (!prefersReducedMotion) {
+        const lenis = new Lenis({ duration: 1.15, smoothWheel: true });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        document.querySelectorAll('a[href^="#"]').forEach((a) => {
+          a.addEventListener('click', (e) => {
+            const target = document.querySelector(a.getAttribute('href'));
+            if (target) { e.preventDefault(); lenis.scrollTo(target, { offset: -60 }); }
+          });
+        });
+      }
+
+      const preloader = document.getElementById('preloader');
+      const fill = document.getElementById('preloaderFill');
+      const count = document.getElementById('preloaderCount');
+      const progress = { v: 0 };
+
+      const introTl = gsap.timeline({ paused: true });
+      introTl
+        .to(preloader, { yPercent: -100, duration: 0.9, ease: 'power4.inOut' })
+        .set(preloader, { display: 'none' })
+        .from('.header__inner', { y: -30, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.45')
+        .to('#heroTitle .reveal-line > span', {
+          y: 0, duration: 1.1, stagger: 0.09, ease: 'power4.out',
+        }, '-=0.55')
+        .to('.hero [data-reveal]', {
+          y: 0, opacity: 1, duration: 0.9, stagger: 0.12, ease: 'power3.out',
+        }, '-=0.8');
+
+      gsap.set('#heroTitle .reveal-line > span', { y: '110%' });
+      gsap.set('.hero [data-reveal]', { y: 28, opacity: 0 });
+
+      gsap.to(progress, {
+        v: 100,
+        duration: prefersReducedMotion ? 0.01 : 1.6,
+        ease: 'power2.inOut',
+        onUpdate: () => {
+          fill.style.transform = `scaleX(${progress.v / 100})`;
+          count.textContent = String(Math.round(progress.v)).padStart(2, '0');
+        },
+        onComplete: () => introTl.play(),
+      });
+
+      const header = document.getElementById('header');
+      ScrollTrigger.create({
+        start: 80,
+        onUpdate: (self) => header.classList.toggle('is-scrolled', self.scroll() > 80),
+      });
+
+      document.querySelectorAll('main section:not(.hero) .reveal-line > span').forEach((el) => {
+        gsap.fromTo(el, { y: '110%' }, {
+          y: 0, duration: 1.1, ease: 'power4.out',
+          scrollTrigger: { trigger: el.closest('h2, h1') || el, start: 'top 88%' },
+        });
+      });
+
+      const revealGroups = new Map();
+      document.querySelectorAll('main section:not(.hero) [data-reveal]').forEach((el) => {
+        const section = el.closest('section');
+        if (!revealGroups.has(section)) revealGroups.set(section, []);
+        revealGroups.get(section).push(el);
+      });
+      revealGroups.forEach((els, section) => {
+        gsap.fromTo(els, { y: 32, opacity: 0 }, {
+          y: 0, opacity: 1, duration: 0.9, stagger: 0.1, ease: 'power3.out',
+          scrollTrigger: { trigger: section, start: 'top 78%' },
+        });
+      });
+
+      gsap.fromTo('#plans .plan', { y: 70, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 1, stagger: 0.14, ease: 'power3.out',
+        scrollTrigger: { trigger: '#plans', start: 'top 82%' },
+      });
+
+      document.querySelectorAll('[data-count]').forEach((el) => {
+        const target = +el.dataset.count;
+        const obj = { v: 0 };
+        gsap.to(obj, {
+          v: target, duration: 2, ease: 'power2.out',
+          scrollTrigger: { trigger: '#metrics', start: 'top 85%' },
+          onUpdate: () => { el.textContent = Math.round(obj.v); },
+        });
+      });
+
+      if (!prefersReducedMotion) {
+        const group = document.querySelector('.ticker__group');
+        const tickerTween = gsap.to('#ticker', {
+          x: () => -group.offsetWidth,
+          duration: 28, ease: 'none', repeat: -1,
+          modifiers: { x: (x) => `${parseFloat(x) % group.offsetWidth}px` },
+        });
+        const tickerEl = document.getElementById('ticker');
+        tickerEl.addEventListener('mouseenter', () => gsap.to(tickerTween, { timeScale: 0.25, duration: 0.6 }));
+        tickerEl.addEventListener('mouseleave', () => gsap.to(tickerTween, { timeScale: 1, duration: 0.6 }));
+      }
+
+      if (finePointer && !prefersReducedMotion) {
+        document.querySelectorAll('[data-tilt]').forEach((card) => {
+          card.addEventListener('mousemove', (e) => {
+            const r = card.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width;
+            const py = (e.clientY - r.top) / r.height;
+            card.style.setProperty('--mx', `${px * 100}%`);
+            card.style.setProperty('--my', `${py * 100}%`);
+            gsap.to(card, {
+              rotateY: (px - 0.5) * 8, rotateX: -(py - 0.5) * 8,
+              transformPerspective: 900, duration: 0.5, ease: 'power2.out',
+            });
+          });
+          card.addEventListener('mouseleave', () => {
+            gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.8, ease: 'elastic.out(1, 0.5)' });
+          });
+        });
+      }
+
+      if (finePointer) {
+        const dot = document.getElementById('cursorDot');
+        const ring = document.getElementById('cursorRing');
+        const label = document.getElementById('cursorLabel');
+        const pos = { x: innerWidth / 2, y: innerHeight / 2 };
+        const ringPos = { x: pos.x, y: pos.y };
+
+        window.addEventListener('pointermove', (e) => {
+          pos.x = e.clientX; pos.y = e.clientY;
+          dot.classList.remove('is-hidden');
+          ring.classList.remove('is-hidden');
+        });
+        document.addEventListener('mouseleave', () => {
+          dot.classList.add('is-hidden');
+          ring.classList.add('is-hidden');
+        });
+
+        gsap.ticker.add(() => {
+          ringPos.x += (pos.x - ringPos.x) * 0.16;
+          ringPos.y += (pos.y - ringPos.y) * 0.16;
+          dot.style.transform = `translate(${pos.x}px, ${pos.y}px) translate(-50%,-50%)`;
+          ring.style.transform = `translate(${ringPos.x}px, ${ringPos.y}px) translate(-50%,-50%)`;
+        });
+
+        document.querySelectorAll('[data-cursor]').forEach((el) => {
+          el.addEventListener('mouseenter', () => {
+            const text = el.dataset.cursor;
+            if (text) {
+              label.textContent = text;
+              ring.classList.add('is-active');
+              gsap.to(ring, { width: 86, height: 86, duration: 0.35, ease: 'power3.out' });
+              gsap.to(dot, { scale: 0, duration: 0.25 });
+            } else {
+              gsap.to(ring, { width: 64, height: 64, duration: 0.35, ease: 'power3.out' });
+              gsap.to(dot, { scale: 1.6, duration: 0.25 });
+            }
+          });
+          el.addEventListener('mouseleave', () => {
+            ring.classList.remove('is-active');
+            gsap.to(ring, { width: 44, height: 44, duration: 0.35, ease: 'power3.out' });
+            gsap.to(dot, { scale: 1, duration: 0.25 });
+          });
+        });
+
+        document.querySelectorAll('[data-magnetic]').forEach((el) => {
+          const strength = 0.35;
+          el.addEventListener('mousemove', (e) => {
+            const r = el.getBoundingClientRect();
+            const dx = e.clientX - (r.left + r.width / 2);
+            const dy = e.clientY - (r.top + r.height / 2);
+            gsap.to(el, { x: dx * strength, y: dy * strength, duration: 0.4, ease: 'power3.out' });
+          });
+          el.addEventListener('mouseleave', () => {
+            gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: 'elastic.out(1, 0.4)' });
+          });
+        });
+      }
+
+      document.querySelectorAll('[data-plan]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const planSelect = document.getElementById('fPlan');
+          const map = {
+            'Starter 40h': 'Starter — 40h/mês (R$ 5.800)',
+            'Growth 90h': 'Growth — 90h/mês (R$ 11.900)',
+            'Scale 120h': 'Scale — 120h/mês (R$ 14.800)',
+          };
+          if (planSelect && map[btn.dataset.plan]) planSelect.value = map[btn.dataset.plan];
+        });
+      });
+
+      const form = document.getElementById('leadForm');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = form.name.value.trim();
+        const email = form.email.value.trim();
+        const plan = form.plan.value;
+        if (!name || !email || !/^\S+@\S+\.\S+$/.test(email) || !plan) {
+          gsap.fromTo(form, { x: 0 }, { x: 10, duration: 0.07, repeat: 5, yoyo: true, clearProps: 'x' });
+          return;
+        }
+
+        const msg = encodeURIComponent(
+          `Olá! Sou ${name} (${email}). Tenho interesse no plano: ${plan}.` +
+          (form.message.value ? `\n\nSobre o projeto: ${form.message.value}` : '')
+        );
+        window.open(`https://wa.me/5521999999999?text=${msg}`, '_blank', 'noopener');
+
+        form.classList.add('is-sent');
+        gsap.from('.form__success', { opacity: 0, y: 20, duration: 0.7, ease: 'power3.out' });
+      });
+    })();
+  </script>
+</body>
+</html>
