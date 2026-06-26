@@ -76,6 +76,7 @@ export function AssistantPanel({ open, onClose, onDataChanged }) {
           {messages.length === 0 && (
             <div className="assistant-msg assistant-msg--assistant">
               Olá! Posso ajudar com:
+              {'\n'}• Atualizar status: "orlario falta cliente aprovar escopo"
               {'\n'}• Criar projeto ou colaborador
               {'\n'}• Alterar valor combinado e data de pagamento
               {'\n'}• Registrar horas de um dev

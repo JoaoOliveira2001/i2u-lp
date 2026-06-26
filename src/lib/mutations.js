@@ -140,3 +140,86 @@ export async function fetchProjectById(projectId) {
   if (error) throw error
   return data
 }
+
+export async function fetchStatusHistory(projectId) {
+  const { data, error } = await supabase
+    .from('project_status_logs')
+    .select('id, note, source, created_at')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function updateProjectStatusNote(projectId, note, source = 'manual') {
+  const trimmed = note?.trim()
+  if (!trimmed) throw new Error('Status não pode ser vazio')
+
+  const { error: logError } = await supabase.from('project_status_logs').insert({
+    project_id: projectId,
+    note: trimmed,
+    source,
+  })
+  if (logError) throw logError
+
+  const { data, error } = await supabase
+    .from('projects')
+    .update({
+      status_note: trimmed,
+      status_note_updated_at: new Date().toISOString(),
+    })
+    .eq('id', projectId)
+    .select('*')
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function fetchLinearIssues(projectId, filter = 'open') {
+  let query = supabase
+    .from('linear_issues')
+    .select('*')
+    .eq('project_id', projectId)
+    .order('linear_updated_at', { ascending: false, nullsFirst: false })
+
+  if (filter === 'open') {
+    query = query.not('state_type', 'eq', 'completed').not('state_type', 'eq', 'canceled')
+  } else if (filter === 'done') {
+    query = query.in('state_type', ['completed', 'canceled'])
+  }
+
+  const { data, error } = await query
+  if (error) throw error
+  return data || []
+}
+
+export async function fetchLinearUserMap() {
+  const { data, error } = await supabase
+    .from('linear_user_map')
+    .select('*, developers(id, name)')
+    .order('linear_user_name')
+
+  if (error) throw error
+  return data || []
+}
+
+export async function upsertLinearUserMap({ linearUserId, linearUserName, developerId }) {
+  const { data, error } = await supabase
+    .from('linear_user_map')
+    .upsert(
+      {
+        linear_user_id: linearUserId,
+        linear_user_name: linearUserName,
+        developer_id: developerId || null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'linear_user_id' },
+    )
+    .select('*, developers(id, name)')
+    .single()
+
+  if (error) throw error
+  return data
+}

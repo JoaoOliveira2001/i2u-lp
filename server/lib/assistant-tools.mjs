@@ -1,5 +1,12 @@
 import { tool } from 'ai'
 import { z } from 'zod'
+import {
+  findProject,
+  getProjectLead as queryProjectLead,
+  listLinearTasks as queryLinearTasks,
+  listProjects as queryListProjects,
+  listProjectsWithStatus as queryListProjectsWithStatus,
+} from './briefing-queries.mjs'
 import { getSupabaseAdmin } from './supabase-admin.mjs'
 
 function slugify(text) {
@@ -22,18 +29,6 @@ function parseHours(value) {
   return Number(str)
 }
 
-async function findProject(query) {
-  const supabaseAdmin = getSupabaseAdmin()
-  const { data, error } = await supabaseAdmin
-    .from('projects')
-    .select('id, slug, name, contract_value_brl')
-    .or(`name.ilike.%${query}%,slug.ilike.%${query}%`)
-    .limit(5)
-
-  if (error) throw new Error(error.message)
-  return data || []
-}
-
 async function findDeveloper(query) {
   const supabaseAdmin = getSupabaseAdmin()
   const { data, error } = await supabaseAdmin
@@ -46,21 +41,31 @@ async function findDeveloper(query) {
   return data || []
 }
 
+async function saveProjectStatusNote(supabaseAdmin, projectId, note, source) {
+  const { error: logError } = await supabaseAdmin.from('project_status_logs').insert({
+    project_id: projectId,
+    note,
+    source,
+  })
+  if (logError) throw new Error(logError.message)
+
+  const { error: updateError } = await supabaseAdmin
+    .from('projects')
+    .update({
+      status_note: note,
+      status_note_updated_at: new Date().toISOString(),
+    })
+    .eq('id', projectId)
+
+  if (updateError) throw new Error(updateError.message)
+}
+
 export function createAssistantTools() {
   return {
     listProjects: tool({
       description: 'Lista todos os projetos com receita, custo, margem e status de lucratividade.',
       inputSchema: z.object({}),
-      execute: async () => {
-        const supabaseAdmin = getSupabaseAdmin()
-        const { data, error } = await supabaseAdmin
-          .from('project_profitability')
-          .select('*')
-          .order('name')
-
-        if (error) throw new Error(error.message)
-        return { projects: data }
-      },
+      execute: async () => queryListProjects(),
     }),
 
     getProjectDetail: tool({
@@ -316,6 +321,92 @@ export function createAssistantTools() {
 
         if (error) throw new Error(error.message)
         return { developers: data }
+      },
+    }),
+
+    updateProjectStatusNote: tool({
+      description:
+        'Atualiza o status operacional de um projeto (bloqueios, próximos passos). Cria histórico.',
+      inputSchema: z.object({
+        projectName: z.string(),
+        note: z.string().describe('Texto livre do status, ex: falta cliente aprovar escopo'),
+      }),
+      execute: async ({ projectName, note }) => {
+        const supabaseAdmin = getSupabaseAdmin()
+        const matches = await findProject(projectName)
+        if (!matches.length) return { error: `Projeto "${projectName}" não encontrado` }
+
+        const trimmed = note.trim()
+        if (!trimmed) return { error: 'Status não pode ser vazio' }
+
+        await saveProjectStatusNote(supabaseAdmin, matches[0].id, trimmed, 'assistant')
+
+        const { data } = await supabaseAdmin
+          .from('project_profitability')
+          .select('name, status_note, status_note_updated_at')
+          .eq('project_id', matches[0].id)
+          .single()
+
+        return {
+          ok: true,
+          message: `Status de ${matches[0].name} atualizado`,
+          project: data,
+        }
+      },
+    }),
+
+    getProjectStatusHistory: tool({
+      description: 'Retorna o histórico de status operacionais de um projeto.',
+      inputSchema: z.object({
+        projectName: z.string(),
+      }),
+      execute: async ({ projectName }) => {
+        const supabaseAdmin = getSupabaseAdmin()
+        const matches = await findProject(projectName)
+        if (!matches.length) return { error: `Projeto "${projectName}" não encontrado` }
+
+        const { data, error } = await supabaseAdmin
+          .from('project_status_logs')
+          .select('note, source, created_at')
+          .eq('project_id', matches[0].id)
+          .order('created_at', { ascending: false })
+
+        if (error) throw new Error(error.message)
+
+        return { project: matches[0].name, history: data }
+      },
+    }),
+
+    listProjectsWithStatus: tool({
+      description: 'Lista projetos ativos com status operacional atual.',
+      inputSchema: z.object({
+        onlyWithStatus: z.boolean().optional().describe('Se true, só projetos com status preenchido'),
+      }),
+      execute: async ({ onlyWithStatus }) => queryListProjectsWithStatus({ onlyWithStatus }),
+    }),
+
+    listLinearTasks: tool({
+      description: 'Lista tasks/issues do Linear de um projeto (abertas por padrão).',
+      inputSchema: z.object({
+        projectName: z.string(),
+        filter: z.enum(['open', 'all', 'done']).optional(),
+      }),
+      execute: async ({ projectName, filter = 'open' }) => {
+        const result = await queryLinearTasks({ projectName, filter })
+        if (result.error) return { error: result.error }
+        return result
+      },
+    }),
+
+    getProjectLead: tool({
+      description: 'Retorna o dev responsável (lead) de um projeto vindo do Linear.',
+      inputSchema: z.object({
+        projectName: z.string(),
+      }),
+      execute: async ({ projectName }) => {
+        const result = await queryProjectLead({ projectName })
+        if (result.error) return { error: result.error }
+        return result
       },
     }),
 

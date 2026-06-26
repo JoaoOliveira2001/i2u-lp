@@ -1,3 +1,4 @@
+import { AttentionPanel } from '../components/AttentionPanel'
 import { KpiCards } from '../components/KpiCards'
 import { ProfitChart } from '../components/ProfitChart'
 import { ProjectGrid } from '../components/ProjectTable'
@@ -18,6 +19,8 @@ export function Overview({ projects, totals, onSelectProject }) {
       </div>
 
       <KpiCards totals={totals} />
+
+      <AttentionPanel projects={projects} onSelectProject={onSelectProject} />
 
       {totals.fixedDevs?.length > 0 && (
         <section className="panel">

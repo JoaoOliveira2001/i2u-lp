@@ -2,6 +2,8 @@ import { formatBrl, formatHours } from '../../lib/format'
 import { getDeveloperBreakdown, getProjectEntries } from '../hooks/useProfitability'
 import { AddTimeEntryForm } from '../components/AddTimeEntryForm'
 import { ProjectEditForm } from '../components/ProjectEditForm'
+import { LinearIssuesPanel } from '../components/LinearIssuesPanel'
+import { StatusNoteForm } from '../components/StatusNoteForm'
 import { StatusBadge } from '../components/KpiCards'
 import { TimeEntryTable } from '../components/TimeEntryTable'
 
@@ -25,7 +27,17 @@ export function ProjectDetail({ project, timeEntries, developers, onBack, onRefr
         <StatusBadge status={project.status} marginPct={project.margin_pct} />
         {' · '}
         Pagamento: {formatDate(project.payment_date)}
+        {project.status_note && (
+          <>
+            {' · '}
+            <span className="status-inline">{project.status_note}</span>
+          </>
+        )}
       </p>
+
+      <StatusNoteForm project={project} onSaved={onRefresh} />
+
+      <LinearIssuesPanel project={project} />
 
       <section className="panel">
         <ProjectEditForm project={project} onSaved={onRefresh} />

@@ -7,7 +7,9 @@
     "dev": "concurrently -n vite,api -c green,cyan \"vite\" \"node server/dev-api.mjs\"",
     "dev:vite": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "linear:seed-users": "node scripts/seed-linear-users.mjs",
+    "linear:setup-webhook": "node scripts/setup-linear-webhook.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.71",

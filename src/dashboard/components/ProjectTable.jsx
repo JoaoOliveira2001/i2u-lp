@@ -6,6 +6,11 @@ function formatDate(value) {
   return new Date(`${value}T12:00:00`).toLocaleDateString('pt-BR')
 }
 
+function truncate(text, max = 48) {
+  if (!text) return '—'
+  return text.length > max ? `${text.slice(0, max)}…` : text
+}
+
 export function ProjectTable({ projects, onSelect }) {
   const sorted = [...projects].sort((a, b) => {
     const marginA = a.margin_brl == null ? -Infinity : Number(a.margin_brl)
@@ -24,6 +29,8 @@ export function ProjectTable({ projects, onSelect }) {
             <th>Custo</th>
             <th>Lucro</th>
             <th>Horas</th>
+            <th>Margem</th>
+            <th>Lead</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -42,6 +49,15 @@ export function ProjectTable({ projects, onSelect }) {
               <td>{formatHours(project.total_hours)}</td>
               <td>
                 <StatusBadge status={project.status} marginPct={project.margin_pct} />
+              </td>
+              <td>{project.lead_developer_name || '—'}</td>
+              <td className="status-note-cell">
+                {project.linear_project_id && (
+                  <span className="badge badge--neutral" title="Vinculado ao Linear">
+                    Linear
+                  </span>
+                )}{' '}
+                {truncate(project.status_note)}
               </td>
             </tr>
           ))}
@@ -80,6 +96,9 @@ export function ProjectGrid({ projects, onSelect }) {
           <div style={{ marginTop: '0.6rem' }}>
             <StatusBadge status={project.status} marginPct={project.margin_pct} />
           </div>
+          {project.status_note && (
+            <div className="project-card__status-note">{truncate(project.status_note, 80)}</div>
+          )}
           <div style={{ marginTop: '0.75rem' }}>
             <ConsumptionBar
               revenue={Number(project.revenue_brl) || 0}

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { AddCollaboratorForm, CollaboratorTable } from '../components/CollaboratorForms'
+import { LinearUserMapPanel } from '../components/LinearUserMapPanel'
 
 export function Team({ developers, onRefresh }) {
   const [showAdd, setShowAdd] = useState(false)
@@ -33,6 +34,8 @@ export function Team({ developers, onRefresh }) {
       <section className="panel">
         <CollaboratorTable developers={developers} onSaved={onRefresh} />
       </section>
+
+      <LinearUserMapPanel developers={developers} />
     </>
   )
 }
