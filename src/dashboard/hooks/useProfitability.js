@@ -23,7 +23,7 @@ export function useProfitability() {
       supabase
         .from('time_entries')
         .select('*, projects(slug, name, status), developers(name, hourly_rate_brl)')
-        .order('work_date', { ascending: false }),
+        .order('created_at', { ascending: false }),
     ])
 
     if (projectsRes.error || devsRes.error || entriesRes.error) {

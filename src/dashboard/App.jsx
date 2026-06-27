@@ -7,6 +7,7 @@ import { ProjectDetail } from './pages/ProjectDetail'
 import { Projects } from './pages/Projects'
 import { MonthlyProfit } from './pages/MonthlyProfit'
 import { Team } from './pages/Team'
+import { RecentHours } from './pages/RecentHours'
 
 const AUTH_KEY = 'i2u_dashboard_auth'
 
@@ -134,6 +135,17 @@ export default function App() {
     )
   } else if (page === 'team') {
     content = <Team developers={developers} onRefresh={handleRefresh} />
+  } else if (page === 'hours') {
+    content = (
+      <RecentHours
+        timeEntries={timeEntries}
+        developers={developers}
+        onSelectProject={(partial) => {
+          const full = projects.find((p) => p.project_id === partial.project_id) || partial
+          handleSelectProject(full)
+        }}
+      />
+    )
   } else {
     content = (
       <Overview

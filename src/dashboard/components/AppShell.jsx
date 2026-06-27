@@ -43,6 +43,13 @@ export function AppShell({
             </button>
             <button
               type="button"
+              className={`nav__link ${page === 'hours' ? 'is-active' : ''}`}
+              onClick={() => onNavigate('hours')}
+            >
+              Horas
+            </button>
+            <button
+              type="button"
               className={`nav__link ${page === 'team' ? 'is-active' : ''}`}
               onClick={() => onNavigate('team')}
             >
