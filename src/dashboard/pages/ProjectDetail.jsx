@@ -3,6 +3,7 @@ import { getDeveloperBreakdown, getProjectEntries } from '../hooks/useProfitabil
 import { AddTimeEntryForm } from '../components/AddTimeEntryForm'
 import { ProjectEditForm } from '../components/ProjectEditForm'
 import { LinearIssuesPanel } from '../components/LinearIssuesPanel'
+import { FigmaPanel } from '../components/FigmaPanel'
 import { StatusNoteForm } from '../components/StatusNoteForm'
 import { StatusBadge } from '../components/KpiCards'
 import { TimeEntryTable } from '../components/TimeEntryTable'
@@ -36,6 +37,8 @@ export function ProjectDetail({ project, timeEntries, developers, onBack, onRefr
       </p>
 
       <StatusNoteForm project={project} onSaved={onRefresh} />
+
+      <FigmaPanel project={project} />
 
       <LinearIssuesPanel project={project} />
 

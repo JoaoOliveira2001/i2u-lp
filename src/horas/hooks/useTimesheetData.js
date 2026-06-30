@@ -56,7 +56,7 @@ export function useTimesheetData(developerId) {
 
     const { data, error: entriesError } = await supabase
       .from('time_entries')
-      .select('id, work_date, hours_decimal, task_description, projects(name)')
+      .select('id, project_id, work_date, hours_decimal, task_description, projects(name)')
       .eq('developer_id', developerId)
       .gte('work_date', formatDateKey(since))
       .order('work_date', { ascending: false })

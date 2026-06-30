@@ -81,7 +81,7 @@ export default function App() {
               onSaved={refresh}
             />
 
-            <MyEntriesList entries={entries} />
+            <MyEntriesList entries={entries} projects={projects} onSaved={refresh} />
           </>
         )}
       </main>

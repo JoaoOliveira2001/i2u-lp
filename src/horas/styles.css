@@ -212,6 +212,38 @@ body {
   padding: 0.5rem 0.75rem;
 }
 
+.btn--sm {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.form-actions .btn--primary {
+  width: auto;
+}
+
+.entry-item__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.entry-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.entry-edit .field {
+  margin-bottom: 0;
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

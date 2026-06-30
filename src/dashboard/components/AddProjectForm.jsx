@@ -7,6 +7,7 @@ export function AddProjectForm({ onSaved, onCancel }) {
   const [contractValue, setContractValue] = useState('')
   const [paymentDate, setPaymentDate] = useState('')
   const [notes, setNotes] = useState('')
+  const [figmaUrl, setFigmaUrl] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -26,6 +27,7 @@ export function AddProjectForm({ onSaved, onCancel }) {
         contractValueBrl: contractValue,
         paymentDate: paymentDate || null,
         notes,
+        figmaUrl,
       })
       onSaved?.()
     } catch (err) {
@@ -67,6 +69,16 @@ export function AddProjectForm({ onSaved, onCancel }) {
           type="date"
           value={paymentDate}
           onChange={(e) => setPaymentDate(e.target.value)}
+        />
+      </FormField>
+
+      <FormField label="Link do Figma">
+        <input
+          className="form-input"
+          type="url"
+          value={figmaUrl}
+          onChange={(e) => setFigmaUrl(e.target.value)}
+          placeholder="https://www.figma.com/design/..."
         />
       </FormField>
 

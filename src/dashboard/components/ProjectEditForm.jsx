@@ -9,6 +9,7 @@ export function ProjectEditForm({ project, onSaved }) {
   )
   const [paymentDate, setPaymentDate] = useState(project.payment_date || '')
   const [notes, setNotes] = useState(project.notes || '')
+  const [figmaUrl, setFigmaUrl] = useState(project.figma_url || '')
   const [projectStatus, setProjectStatus] = useState(project.project_status || 'active')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -26,6 +27,7 @@ export function ProjectEditForm({ project, onSaved }) {
         contractValueBrl: contractValue,
         paymentDate,
         notes,
+        figmaUrl,
         projectStatus,
       })
       setSuccess('Projeto atualizado')
@@ -86,6 +88,16 @@ export function ProjectEditForm({ project, onSaved }) {
           <option value="active">Ativo (aparece no dashboard)</option>
           <option value="finalized">Finalizado e pago (oculto)</option>
         </select>
+      </FormField>
+
+      <FormField label="Link do Figma">
+        <input
+          className="form-input"
+          type="url"
+          value={figmaUrl}
+          onChange={(e) => setFigmaUrl(e.target.value)}
+          placeholder="https://www.figma.com/design/..."
+        />
       </FormField>
 
       <FormField label="Observações">

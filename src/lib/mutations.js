@@ -17,6 +17,9 @@ export async function updateProject(projectId, fields) {
   }
   if (fields.notes !== undefined) payload.notes = fields.notes?.trim() || null
   if (fields.projectStatus !== undefined) payload.status = fields.projectStatus
+  if (fields.figmaUrl !== undefined) {
+    payload.figma_url = fields.figmaUrl?.trim() || null
+  }
 
   const { data, error } = await supabase
     .from('projects')
@@ -29,7 +32,7 @@ export async function updateProject(projectId, fields) {
   return data
 }
 
-export async function createProject({ name, contractValueBrl, paymentDate, notes }) {
+export async function createProject({ name, contractValueBrl, paymentDate, notes, figmaUrl }) {
   const baseSlug = slugify(name)
   let slug = baseSlug
   let attempt = 0
@@ -44,6 +47,7 @@ export async function createProject({ name, contractValueBrl, paymentDate, notes
           contractValueBrl === '' || contractValueBrl == null ? null : Number(contractValueBrl),
         payment_date: paymentDate || null,
         notes: notes?.trim() || null,
+        figma_url: figmaUrl?.trim() || null,
       })
       .select('*')
       .single()
@@ -123,6 +127,32 @@ export async function createTimeEntry({
       hours_decimal: Number(hoursDecimal),
       task_description: taskDescription?.trim() || null,
     })
+    .select('*')
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function updateTimeEntry(entryId, {
+  projectId,
+  workDate,
+  hoursDecimal,
+  taskDescription,
+}) {
+  const payload = {}
+
+  if (projectId != null) payload.project_id = projectId
+  if (workDate != null) payload.work_date = workDate
+  if (hoursDecimal != null) payload.hours_decimal = Number(hoursDecimal)
+  if (taskDescription !== undefined) {
+    payload.task_description = taskDescription?.trim() || null
+  }
+
+  const { data, error } = await supabase
+    .from('time_entries')
+    .update(payload)
+    .eq('id', entryId)
     .select('*')
     .single()
 
