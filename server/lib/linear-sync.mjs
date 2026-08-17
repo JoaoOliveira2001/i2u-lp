@@ -267,7 +267,16 @@ export async function syncProjectIssues(supabase, linearProjectId) {
   for (const issue of issues) {
     await upsertIssueFromLinear(supabase, { ...issue, projectId: linearProjectId })
   }
-  return issues.length
+
+  const syncedAt = new Date().toISOString()
+  const { error } = await supabase
+    .from('projects')
+    .update({ linear_synced_at: syncedAt })
+    .eq('linear_project_id', linearProjectId)
+
+  if (error) throw new Error(error.message)
+
+  return { count: issues.length, syncedAt }
 }
 
 export async function syncAllFromLinear(supabase) {
@@ -280,7 +289,8 @@ export async function syncAllFromLinear(supabase) {
       continue
     }
     await upsertProjectFromLinear(supabase, project)
-    issueCount += await syncProjectIssues(supabase, project.id)
+    const synced = await syncProjectIssues(supabase, project.id)
+    issueCount += synced.count
   }
 
   return { projects: projects.length, issues: issueCount }
@@ -296,8 +306,8 @@ export async function handleLinearWebhook(supabase, payload) {
       return { ok: true, type: 'Project', action: 'archive' }
     }
     const project = await upsertProjectFromLinear(supabase, data)
-    const issues = await syncProjectIssues(supabase, data.id)
-    return { ok: true, type: 'Project', action, projectId: project.id, issues }
+    const synced = await syncProjectIssues(supabase, data.id)
+    return { ok: true, type: 'Project', action, projectId: project.id, issues: synced.count }
   }
 
   if (type === 'Issue') {

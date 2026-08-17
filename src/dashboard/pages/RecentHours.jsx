@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { formatBrl, formatHours } from '../../lib/format'
 import { HoursEvolutionChart } from '../components/HoursEvolutionChart'
+import { MonthlyPayrollPanel } from '../components/MonthlyPayrollPanel'
 
 const LIMIT = 80
 
@@ -56,6 +57,8 @@ export function RecentHours({ timeEntries, developers, onSelectProject }) {
           </select>
         </label>
       </div>
+
+      <MonthlyPayrollPanel timeEntries={timeEntries} developers={developers} />
 
       <section className="panel">
         <h2 className="panel__title">Evolução de horas por colaborador</h2>

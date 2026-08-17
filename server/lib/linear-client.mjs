@@ -8,12 +8,19 @@ function getApiKey() {
   return key
 }
 
+function getAuthHeader() {
+  const key = getApiKey().trim()
+  if (key.startsWith('Bearer ')) return key
+  if (key.startsWith('lin_oauth_')) return `Bearer ${key}`
+  return key
+}
+
 export async function linearQuery(query, variables = {}) {
   const response = await fetch(LINEAR_API, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: getApiKey(),
+      Authorization: getAuthHeader(),
     },
     body: JSON.stringify({ query, variables }),
   })

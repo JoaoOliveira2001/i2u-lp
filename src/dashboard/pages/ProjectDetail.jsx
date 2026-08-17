@@ -7,6 +7,7 @@ import { FigmaPanel } from '../components/FigmaPanel'
 import { StatusNoteForm } from '../components/StatusNoteForm'
 import { StatusBadge } from '../components/KpiCards'
 import { TimeEntryTable } from '../components/TimeEntryTable'
+import { ClientPortalBanner } from '../components/ClientPortalBanner'
 
 function formatDate(value) {
   if (!value) return '—'
@@ -37,6 +38,8 @@ export function ProjectDetail({ project, timeEntries, developers, onBack, onRefr
       </p>
 
       <StatusNoteForm project={project} onSaved={onRefresh} />
+
+      <ClientPortalBanner project={project} />
 
       <FigmaPanel project={project} />
 

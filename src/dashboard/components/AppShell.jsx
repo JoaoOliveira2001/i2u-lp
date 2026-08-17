@@ -55,6 +55,20 @@ export function AppShell({
             >
               Equipe
             </button>
+            <button
+              type="button"
+              className={`nav__link ${page === 'bot-g2l' ? 'is-active' : ''}`}
+              onClick={() => onNavigate('bot-g2l')}
+            >
+              Bot G2L
+            </button>
+            <button
+              type="button"
+              className={`nav__link ${page === 'passwords' ? 'is-active' : ''}`}
+              onClick={() => onNavigate('passwords')}
+            >
+              Senhas
+            </button>
           </nav>
         </div>
       </header>

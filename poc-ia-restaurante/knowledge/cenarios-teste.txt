@@ -1,0 +1,1732 @@
+Cenários de Teste Bot de Atendimento Delivery WhatsApp
+Conversas simuladas com valor do prato e regras de bandeira para máquina/ticket
+Base utilizada: prompt de regras do bot de delivery por WhatsApp, atualizado com as novas regras: sempre mostrar valor do prato quando houver produto definido; e pedir bandeira quando o pagamento for máquina ou ticket.
+
+SUCESSO: o bot consegue seguir o fluxo automático
+
+ATENDENTE: precisa transferir ou pedir ajuda humana
+Resumo dos grupos de teste
+
+Grupo
+
+Foco
+
+Tipo de validação
+
+1. Saudação e consulta inicial
+
+Cardápio, aberto, delivery e indecisão
+
+Sucesso / Atendente
+
+2. Procurando pratos e produtos
+
+Pizza, lanche, limite de sabores, dois pratos
+
+Sucesso / Atendente
+
+3. Adicionais e observações
+
+Adicionais com valor, “com”, completo, observações
+
+Sucesso / Atendente
+
+4. Delivery, retirada, endereço e taxa
+
+Endereço, bairro, taxa, área não atendida
+
+Sucesso / Atendente
+
+5. Pagamento e fechamento
+
+Pix, dinheiro, máquina com bandeira, ticket com bandeira
+
+Sucesso / Atendente
+
+6. Pós-pedido, cancelamento e reclamações
+
+Cancelamento, reclamação, desconto, andamento
+
+Atendente principalmente
+7. Complemento - conversas reais de atendente
+Casos reais: endereço cedo, ticket, bandeira, retirada, alergia, foto e pedido grande
+Sucesso / Atendente
+
+1. Saudação e consulta inicial
+1. Cliente pede cardápio
+
+SUCESSO
+Objetivo: Cliente está em modo consulta. O bot envia o link de compra direta e se oferece para ajudar pelo WhatsApp.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Boa noite, tem cardápio?
+
+
+Bot:
+Boa noite 😊 Temos sim. Você pode ver o cardápio completo e fazer o pedido direto pelo link: loja.wdelivery.com.br Se preferir, também posso te ajudar por aqui.
+
+
+
+
+2. Cliente pergunta se está aberto
+
+SUCESSO
+Objetivo: Responder de forma curta e direcionar para o pedido.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Oi, vocês estão abertos?
+
+
+Bot:
+Olá 😊 Estamos atendendo sim. Me diga o que você gostaria de pedir.
+
+
+
+
+3. Cliente pergunta se faz delivery
+
+SUCESSO
+Objetivo: Confirmar delivery e orientar que primeiro será montado o pedido.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Boa noite, faz delivery?
+
+
+Bot:
+Boa noite 😊 Fazemos delivery e retirada. Me diga primeiro o que você gostaria de pedir.
+
+
+
+
+4. Cliente está indeciso
+
+SUCESSO
+Objetivo: Cliente ainda está consultando opções; o bot envia o link do cardápio completo.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Não sei o que pedir hoje. O que tem?
+
+
+Bot:
+Você pode ver o cardápio completo e fazer o pedido direto pelo link: loja.wdelivery.com.br Se preferir, me diga o tipo de prato que você quer e eu te ajudo por aqui.
+
+
+
+
+5. Bot não entende após 2 tentativas
+
+ATENDENTE
+Objetivo: Após duas tentativas sem entender o pedido, direcionar para atendente.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero aquele negócio de ontem, mas diferente
+
+
+Bot:
+Não consegui entender qual produto você deseja. Pode me dizer o nome do prato?
+
+
+
+
+
+
+Cliente:
+É aquele lá, tu sabe
+
+
+Bot:
+Ainda não consegui identificar o produto com segurança. Vou chamar um atendente para ajudar você 😊
+
+
+
+
+2. Procurando pratos e produtos
+6. Cliente pergunta sabores de pizza
+
+SUCESSO
+Objetivo: Como é consulta ampla, enviar link do cardápio completo.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quais sabores de pizza vocês têm?
+
+
+Bot:
+Temos várias opções de sabores 😊 Você pode ver o cardápio completo pelo link: loja.wdelivery.com.br Se preferir, também posso te ajudar a montar por aqui.
+
+
+
+
+7. Cliente pergunta preço de pizza
+
+SUCESSO
+Objetivo: Pergunta ampla de preço; bot sugere cardápio completo, mas se citar um produto exemplo informa valor.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quanto custa a pizza grande?
+
+
+Bot:
+A Pizza Grande custa a partir de R$ 69,90. O valor pode mudar conforme borda e adicionais. Você pode ver o cardápio completo pelo link: loja.wdelivery.com.br Se quiser, me diga o sabor que eu ajudo a montar por aqui.
+
+
+
+
+8. Pizza sem tamanho informado
+
+SUCESSO
+Objetivo: Bot identifica que falta o tamanho da pizza antes de continuar.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero uma pizza de calabresa
+
+
+Bot:
+Certo 😊 Qual tamanho da pizza você deseja? Pizza Média — R$ 54,90 Pizza Grande — R$ 69,90
+
+
+
+
+9. Pizza grande clássica
+
+SUCESSO
+Objetivo: Cliente informa tamanho e sabor; bot mostra valor do prato e pede a opção obrigatória de borda.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero uma pizza grande de calabresa.
+
+
+Bot:
+Perfeito 😊 Anotei: 1 Pizza Grande — R$ 69,90 Sabor: Calabresa Valor do prato: R$ 69,90 Agora escolha uma opção obrigatória: Catupiry — R$ 4,00 Cheddar — R$ 4,00 4 Queijos — R$ 4,00 Calabresa — R$ 4,00 Sem Borda — R$ 0,00
+
+
+
+
+
+
+Cliente:
+Sem borda.
+
+
+Bot:
+Certo 👍 Ficou assim: 1 Pizza Grande — R$ 69,90 Sabor: Calabresa Borda: Sem Borda — R$ 0,00 Valor do prato: R$ 69,90 Vai ser delivery ou retirada?
+
+
+
+
+10. Pizza com dois sabores
+
+SUCESSO
+Objetivo: Bot aceita dois sabores quando está dentro do limite do produto e mantém o valor do prato visível.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero uma pizza grande metade calabresa e metade frango.
+
+
+Bot:
+Perfeito 😊 Anotei: 1 Pizza Grande — R$ 69,90 Sabores: Calabresa Frango Valor do prato: R$ 69,90 Agora escolha uma opção obrigatória de borda: Catupiry — R$ 4,00 Cheddar — R$ 4,00 Sem Borda — R$ 0,00
+
+
+
+
+
+
+Cliente:
+Catupiry
+
+
+Bot:
+Certo 👍 Ficou assim: 1 Pizza Grande — R$ 69,90 Sabores: Calabresa e Frango Borda: Catupiry — R$ 4,00 Valor do prato: R$ 73,90 Vai ser delivery ou retirada?
+
+
+
+
+11. Pizza com sabores acima do limite
+
+ATENDENTE
+Objetivo: Quando cliente excede o limite de sabores, o bot pede ajuste dentro da regra.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero uma pizza grande de calabresa, frango, coração e bacon.
+
+
+Bot:
+Para essa pizza, o limite é de até 3 sabores. Pizza Grande — R$ 69,90 Me envie até 3 sabores para continuar o pedido.
+
+
+
+
+12. Lanche simples
+
+SUCESSO
+Objetivo: Cliente pede lanche sem adicionais; bot confirma produto e valor.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero um cheese burguer.
+
+
+Bot:
+Perfeito 😊 Anotei: 1 Cheese Burguer — R$ 24,90 Valor do prato: R$ 24,90 Vai ser delivery ou retirada?
+
+
+
+
+13. Cliente pede completo
+
+SUCESSO
+Objetivo: Para lanche, completo significa sem retirar nada e o bot informa o valor.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero um xis salada completo.
+
+
+Bot:
+Certo 😊 Anotei: 1 Xis Salada completo — R$ 32,90 Valor do prato: R$ 32,90 Sem retirar ingredientes. Vai ser delivery ou retirada?
+
+
+
+
+14. Dois pratos diferentes juntos
+
+ATENDENTE
+Objetivo: Bot não aceita dois pratos diferentes no mesmo fluxo inicial.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero uma pizza grande de calabresa e um hot dog.
+
+
+Bot:
+Para evitar erro no pedido, preciso montar um prato por vez 😊 Me envie apenas um prato por vez.
+
+
+
+
+15. Pedido muito grande com muitas exceções
+
+ATENDENTE
+Objetivo: Cliente passa um pedido complexo demais para fluxo automático.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero 8 lanches, cada um com coisa diferente, dois sem molho, três sem queijo, um com bacon, outro sem salada e outro dividido.
+
+
+Bot:
+Esse pedido envolve vários produtos e muitas exceções individuais. Para evitar erro nos valores e na montagem, vou chamar um atendente 😊
+
+
+
+
+3. Adicionais e observações
+16. Lanche com adicional usando a palavra com
+
+SUCESSO
+Objetivo: Ao usar “com”, o bot lista adicionais com valor e confirma antes de adicionar.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero um cheese burguer com bacon.
+
+
+Bot:
+Certo 😊 Cheese Burguer — R$ 24,90 Para o Cheese Burguer, temos estes adicionais: Bacon — R$ 4,00 Mussarela — R$ 3,00 Picles — R$ 2,00 Barbecue — R$ 2,00 Deseja adicionar Bacon por R$ 4,00?
+
+
+
+
+
+
+Cliente:
+Sim.
+
+
+Bot:
+Perfeito 👍 Anotei: 1 Cheese Burguer — R$ 24,90 Adicional: Bacon — R$ 4,00 Valor do prato: R$ 28,90 Vai ser delivery ou retirada?
+
+
+
+
+17. Cliente pede adicionais disponíveis
+
+SUCESSO
+Objetivo: Bot adiciona itens válidos, sempre com valor.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero um xis bacon com mussarela e barbecue.
+
+
+Bot:
+Certo 😊 Xis Bacon — R$ 36,90 Para o Xis Bacon, temos estes adicionais: Mussarela — R$ 3,00 Picles — R$ 2,00 Barbecue — R$ 2,00 Maionese — R$ 2,00 Deseja adicionar Mussarela por R$ 3,00 e Barbecue por R$ 2,00?
+
+
+
+
+
+
+Cliente:
+Sim
+
+
+Bot:
+Perfeito 👍 Anotei: 1 Xis Bacon — R$ 36,90 Adicionais: Mussarela — R$ 3,00 Barbecue — R$ 2,00 Valor do prato: R$ 41,90 Vai ser delivery ou retirada?
+
+
+
+
+18. Cliente não quer adicional
+
+SUCESSO
+Objetivo: Bot segue sem adicional quando o cliente recusa, mantendo o valor do prato.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero um cheese burguer.
+
+
+Bot:
+Perfeito 😊 Anotei: 1 Cheese Burguer — R$ 24,90 Valor do prato: R$ 24,90 Deseja algum adicional? Bacon — R$ 4,00 Mussarela — R$ 3,00 Picles — R$ 2,00 Barbecue — R$ 2,00
+
+
+
+
+
+
+Cliente:
+Não
+
+
+Bot:
+Certo 👍 Sem adicionais. Valor do prato: R$ 24,90 Vai ser delivery ou retirada?
+
+
+
+
+19. Adicional inexistente
+
+ATENDENTE
+Objetivo: Bot informa que o adicional não está disponível e apresenta opções válidas.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero um cheese burguer com camarão.
+
+
+Bot:
+Cheese Burguer — R$ 24,90 Não encontrei Camarão como adicional para o Cheese Burguer. Adicionais disponíveis: Bacon — R$ 4,00 Mussarela — R$ 3,00 Picles — R$ 2,00 Barbecue — R$ 2,00 Qual adicional você deseja?
+
+
+
+
+20. Observação simples no produto
+
+SUCESSO
+Objetivo: Cliente pede uma observação comum e o bot registra com o valor do prato.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero um xis salada sem cebola.
+
+
+Bot:
+Certo 😊 Anotei: 1 Xis Salada — R$ 32,90 Observação: sem cebola Valor do prato: R$ 32,90 Vai ser delivery ou retirada?
+
+
+
+
+21. Troca de ingrediente no produto
+
+ATENDENTE
+Objetivo: Regra indica começar o produto novamente para ser mais assertivo.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+No xis troca a carne por frango e tira queijo, mas coloca ovo.
+
+
+Bot:
+Xis Salada — R$ 32,90 Para ser mais assertivo, vamos começar o produto novamente 😊 Me envie o prato que você deseja montar.
+
+
+
+
+22. Cliente pede bebida depois do prato
+
+SUCESSO
+Objetivo: Bot aceita bebida quando cliente pede, mas não oferece automaticamente.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero um xis salada.
+
+
+Bot:
+Perfeito 😊 Anotei: 1 Xis Salada — R$ 32,90 Valor do prato: R$ 32,90 Vai ser delivery ou retirada?
+
+
+
+
+
+
+Cliente:
+Também quero uma coca lata.
+
+
+Bot:
+Certo 👍 Incluí: Coca-Cola lata — R$ 6,00 Produto principal: Xis Salada — R$ 32,90 Subtotal: R$ 38,90 Vai ser delivery ou retirada?
+
+
+
+
+4. Delivery, retirada, endereço e taxa
+23. Cliente escolhe retirada
+
+SUCESSO
+Objetivo: Quando for retirada, não pedir endereço e manter subtotal do prato.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vai ser retirada.
+
+
+Bot:
+Certo 👍 Pedido para retirada. Subtotal dos produtos: R$ 69,90 Qual será a forma de pagamento?
+
+
+
+
+24. Cliente escolhe delivery
+
+SUCESSO
+Objetivo: Depois dos produtos definidos, bot pede endereço.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vai ser delivery.
+
+
+Bot:
+Perfeito 😊 Subtotal dos produtos: R$ 69,90 Me informe o endereço para entrega, por favor.
+
+
+
+
+25. Taxa de entrega sem bairro
+
+SUCESSO
+Objetivo: Quando cliente pergunta taxa antes do pedido, bot pede bairro.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quanto é a entrega?
+
+
+Bot:
+Me informe o bairro, por favor, para eu consultar a taxa de entrega.
+
+
+
+
+26. Bairro atendido com taxa
+
+SUCESSO
+Objetivo: Cliente informa bairro cadastrado e bot apresenta a taxa.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+É no Centro.
+
+
+Bot:
+A taxa de entrega para o bairro Centro é R$ 7,00.
+
+
+
+
+27. Endereço completo com bairro identificado
+
+SUCESSO
+Objetivo: Bot identifica bairro e informa taxa antes do pagamento.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Rua Bento Gonçalves, 1450, Centro.
+
+
+Bot:
+Perfeito 😊 Endereço: Rua Bento Gonçalves, 1450 Bairro: Centro Produto: Pizza Grande — R$ 69,90 Taxa de entrega: R$ 7,00 Total parcial: R$ 76,90 Qual será a forma de pagamento?
+
+
+
+
+28. Endereço sem número
+
+SUCESSO
+Objetivo: Bot não fecha delivery sem número.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Rua Sinimbu, Centro.
+
+
+Bot:
+Certo 😊 Produto: Pizza Grande — R$ 69,90 Preciso do número do endereço para continuar.
+
+
+
+
+29. Endereço sem bairro
+
+SUCESSO
+Objetivo: Cliente informou rua e número, mas não informou bairro.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vai ser delivery na Rua Bento Gonçalves, 1450.
+
+
+Bot:
+Perfeito 😊 Produto: Pizza Grande — R$ 69,90 Qual é o bairro?
+
+
+
+
+30. Bairro não cadastrado
+
+ATENDENTE
+Objetivo: Bot não encontra bairro e chama atendente para verificar entrega.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Bairro São Miguel.
+
+
+Bot:
+Produto: Pizza Grande — R$ 69,90 Não encontrei esse bairro na nossa área de entrega. Vou chamar um atendente para verificar se conseguimos entregar nesse endereço.
+
+
+
+
+31. Região de entrega duvidosa
+
+ATENDENTE
+Objetivo: Endereço parece fora da área ou não está claro.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Entrega na estrada velha depois do posto, perto do sítio.
+
+
+Bot:
+Produto: Pizza Grande — R$ 69,90 Esse endereço precisa de verificação para confirmar a entrega. Vou chamar um atendente para ajudar você 😊
+
+
+
+
+5. Pagamento e fechamento
+32. Pagamento Pix
+
+SUCESSO
+Objetivo: Cliente escolhe Pix e bot prepara o fechamento.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vou pagar no Pix.
+
+
+Bot:
+Certo 👍 Produto: Pizza Grande — R$ 69,90 Forma de pagamento: Pix Vou fechar o resumo do pedido para confirmação.
+
+
+
+
+33. Pagamento dinheiro com troco
+
+SUCESSO
+Objetivo: Quando for dinheiro, bot pergunta troco.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vou pagar em dinheiro.
+
+
+Bot:
+Certo 😊 Produto: Xis Salada — R$ 32,90 Vai precisar de troco? Se sim, para quanto?
+
+
+
+
+
+
+Cliente:
+Troco para 100.
+
+
+Bot:
+Perfeito 👍 Produto: Xis Salada — R$ 32,90 Pagamento: dinheiro Troco para R$ 100,00 Vou fechar o resumo do pedido para confirmação.
+
+
+
+
+34. Pagamento cartão na máquina
+
+SUCESSO
+Objetivo: Cliente escolhe máquina; bot pergunta qual bandeira.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Cartão na entrega.
+
+
+Bot:
+Certo 👍 Produto: Pizza Grande — R$ 69,90 Pagamento na máquina. Qual bandeira você vai usar? Visa Mastercard Elo Hipercard American Express
+
+
+
+
+
+
+Cliente:
+Visa
+
+
+Bot:
+Perfeito 👍 Pagamento: máquina Bandeira: Visa Produto: Pizza Grande — R$ 69,90 Vou fechar o resumo do pedido para confirmação.
+
+
+
+
+35. Pagamento ticket alimentação
+
+SUCESSO
+Objetivo: Cliente escolhe ticket; bot pergunta bandeira do ticket.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vou pagar no ticket.
+
+
+Bot:
+Certo 👍 Produto: Xis Bacon — R$ 36,90 Qual bandeira do ticket você vai usar? Alelo Sodexo VR Ticket Ben Pluxee
+
+
+
+
+
+
+Cliente:
+Alelo
+
+
+Bot:
+Perfeito 👍 Pagamento: ticket Bandeira: Alelo Produto: Xis Bacon — R$ 36,90 Vou fechar o resumo do pedido para confirmação.
+
+
+
+
+36. Bandeira de máquina não cadastrada
+
+ATENDENTE
+Objetivo: Se a bandeira não estiver cadastrada, bot chama atendente.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vou pagar na máquina com cartão BanriCompras.
+
+
+Bot:
+Produto: Pizza Grande — R$ 69,90 Não encontrei essa bandeira cadastrada para pagamento na máquina. Vou chamar um atendente para verificar essa forma de pagamento 😊
+
+
+
+
+37. Pagamento não cadastrado
+
+ATENDENTE
+Objetivo: Bot não entende a forma de pagamento e lista opções ou chama atendente se persistir.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vou pagar com vale especial da firma.
+
+
+Bot:
+Produto: Xis Salada — R$ 32,90 Não encontrei essa forma de pagamento. Temos estas opções: Dinheiro Pix Máquina Ticket alimentação Qual delas você deseja usar?
+
+
+
+
+
+
+Cliente:
+É um convênio diferente
+
+
+Bot:
+Vou chamar um atendente para verificar essa forma de pagamento 😊
+
+
+
+
+38. Resumo final para confirmação
+
+SUCESSO
+Objetivo: Depois de produto, endereço e pagamento, bot mostra o resumo final com valores.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Pix
+
+
+Bot:
+Perfeito 😊 Confira o pedido: 1 Pizza Grande — R$ 69,90 Sabor: Calabresa Borda: Sem Borda — R$ 0,00 Valor do prato: R$ 69,90 Delivery: Rua Bento Gonçalves, 1450 Bairro: Centro Taxa de entrega: R$ 7,00 Pagamento: Pix Total: R$ 76,90 Posso confirmar o pedido?
+
+
+
+
+
+
+Cliente:
+Pode confirmar
+
+
+Bot:
+Pedido confirmado ✅ Total: R$ 76,90 Em breve iniciaremos o preparo.
+
+
+
+
+6. Pós-pedido, cancelamento e reclamações
+39. Cancelamento antes de confirmar
+
+SUCESSO
+Objetivo: Se ainda não confirmou, bot pode cancelar o fluxo.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Cancela, não vou pedir agora.
+
+
+Bot:
+Tudo bem 😊 O pedido não foi confirmado. Produto que estava em montagem: Pizza Grande — R$ 69,90 Quando quiser, é só chamar por aqui.
+
+
+
+
+40. Cancelamento depois de confirmado
+
+ATENDENTE
+Objetivo: Pedido confirmado exige atendente.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero cancelar meu pedido.
+
+
+Bot:
+Pedido confirmado: Pizza Grande — R$ 69,90 Como o pedido já foi confirmado, vou chamar um atendente para verificar o cancelamento.
+
+
+
+
+41. Pedido veio errado
+
+ATENDENTE
+Objetivo: Reclamação pós-entrega deve ir para humano.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Meu pedido veio errado.
+
+
+Bot:
+Sinto muito por isso. Pedido informado: Xis Salada — R$ 32,90 Vou chamar um atendente para verificar o que aconteceu e ajudar você.
+
+
+
+
+42. Cliente pede desconto ou cortesia
+
+ATENDENTE
+Objetivo: Negociação deve ser tratada por atendente.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Faz um desconto ou manda uma coca de cortesia?
+
+
+Bot:
+Produto em atendimento: Pizza Grande — R$ 69,90 Descontos, cupons e cortesias precisam ser verificados por um atendente. Vou chamar alguém para ajudar você 😊
+
+
+
+
+43. Cliente pede andamento do pedido
+
+ATENDENTE
+Objetivo: Pós-pedido pode exigir consulta interna; direcionar para atendente.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quanto tempo falta para chegar?
+
+
+Bot:
+Pedido informado: Pizza Grande — R$ 69,90 Vou chamar um atendente para verificar o andamento do seu pedido com mais precisão.
+
+
+
+
+7. Complemento - conversas reais de atendente
+44. Cliente informa delivery antes do produto
+
+SUCESSO
+Objetivo: Quando o cliente informa que é delivery antes do produto, o bot aceita a intenção, mas volta para a montagem do pedido.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Olá, boa noite Gostaria de fazer um pedido
+
+
+Bot:
+Boa noite 😊 Claro. Me diga primeiro o que você gostaria de pedir.
+
+
+
+
+
+
+Cliente:
+Vai ser delivery
+
+
+Bot:
+Certo, anotei que será delivery. Agora me diga o produto para eu montar o pedido.
+
+
+
+
+
+
+Cliente:
+1 double com duas carnes de filé, sem grãos e sem presunto
+
+
+Bot:
+Perfeito 😊 Anotei: 1 Double Filé — R$ 56,90 Observações: sem grãos sem presunto Valor do prato: R$ 56,90 Deseja algum adicional?
+
+
+
+
+
+
+Cliente:
+Dois potes de maionese verde
+
+
+Bot:
+Certo 👍 Adicionais: Maionese verde — R$ 3,00 Maionese verde — R$ 3,00 Valor do prato com adicionais: R$ 62,90 Agora me informe o endereço para entrega.
+
+
+
+
+45. Cachorro quente com salsicha junto
+
+SUCESSO
+Objetivo: Cliente quer um produto parecido com outra opção; bot deve identificar o produto correto, confirmar valor e seguir.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero comprar o cachorro quente frango, mas queria adicionar salsicha junto.
+
+
+Bot:
+Certo 😊 Para esse caso, o produto mais adequado é: Cachorro Quente Cão Fusão — R$ 28,90 Ele já vai com frango e salsicha. Posso anotar esse?
+
+
+
+
+
+
+Cliente:
+Pode
+
+
+Bot:
+Perfeito 👍 Anotei: 1 Cachorro Quente Cão Fusão — R$ 28,90 Valor do prato: R$ 28,90 Vai ser delivery ou retirada?
+
+
+
+
+46. Pedido de produto com opção que não existe no cardápio
+
+ATENDENTE
+Objetivo: Se a combinação não existir e não houver item equivalente, o bot deve chamar atendente.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero um cachorro quente de frango com salsicha, mas no cardápio não tem essa opção.
+
+
+Bot:
+Cachorro Quente Frango — R$ 24,90 Não encontrei a opção de adicionar salsicha para esse produto. Para evitar erro na montagem, vou chamar um atendente para verificar se conseguimos fazer essa alteração 😊
+
+
+
+
+47. Cliente envia endereço cedo e depois pergunta lanches
+
+SUCESSO
+Objetivo: Bot guarda o endereço informado cedo, mas continua priorizando a escolha dos produtos.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Boa noite Vai ser delivery Rua Demo, 149
+
+
+Bot:
+Boa noite 😊 Anotei que será delivery e guardei o endereço informado. Agora me diga primeiro o que você gostaria de pedir.
+
+
+
+
+
+
+Cliente:
+Que tem de lanche?
+
+
+Bot:
+Você pode ver o cardápio completo e fazer o pedido direto pelo link: loja.wdelivery.com.br Se preferir, também posso te ajudar por aqui.
+
+
+
+
+48. Retirada com unidade e nome
+
+SUCESSO
+Objetivo: Para retirada, bot deve pedir unidade e nome para deixar o pedido.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vai ser retirada
+
+
+Bot:
+Certo 👍 Retirada. Em qual unidade você quer retirar? Santa Catarina São Leopoldo
+
+
+
+
+
+
+Cliente:
+Santa Catarina
+
+
+Bot:
+Perfeito. Em nome de quem podemos deixar o pedido?
+
+
+
+
+
+
+Cliente:
+Matheus
+
+
+Bot:
+Certo, Matheus. Agora me diga o pedido.
+
+
+
+
+
+
+Cliente:
+1 cachorro quente de carne de panela 1 xis bacon
+
+
+Bot:
+Anotei: 1 Cachorro Quente Carne de Panela — R$ 29,90 1 Xis Bacon — R$ 36,90 Valor dos pratos: R$ 66,80 Retirada na unidade Santa Catarina. Qual será a forma de pagamento?
+
+
+
+
+49. Cliente pergunta prazo antes de finalizar retirada
+
+SUCESSO
+Objetivo: Bot informa prazo estimado de retirada após produtos definidos.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quanto tempo?
+
+
+Bot:
+Para retirada, fica em torno de 20 a 30 minutos após confirmar o pedido.
+
+
+
+
+
+
+Cliente:
+Pode confirmar
+
+
+Bot:
+Pedido confirmado ✅ Valor dos pratos: R$ 66,80 Retirada em torno de 20 a 30 minutos.
+
+
+
+
+50. Cliente pergunta entrega em região não atendida
+
+ATENDENTE
+Objetivo: Quando a região não está cadastrada ou está fora da área, o bot deve avisar e chamar atendente se for duvidoso.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vocês entregam na Rua Demo, 988, apto 404?
+
+
+Bot:
+Vou verificar a área de entrega pelo endereço informado.
+
+
+
+
+Bot:
+Não encontrei esse endereço dentro da nossa área de delivery cadastrada. Vou chamar um atendente para verificar se conseguimos atender essa região.
+
+
+
+
+51. Cliente pergunta se aceita ticket alimentação
+
+SUCESSO
+Objetivo: Bot pode responder consulta de pagamento, mas deve pedir bandeira quando chegar na forma de pagamento.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vocês aceitam ticket alimentação no delivery?
+
+
+Bot:
+Aceitamos ticket alimentação em algumas bandeiras 😊 Me diga primeiro o que você gostaria de pedir.
+
+
+
+
+
+
+Cliente:
+Quero um Xis Bacon grande completo e uma Coca 600
+
+
+Bot:
+Anotei: 1 Xis Bacon Grande completo — R$ 39,90 1 Coca-Cola 600 ml — R$ 8,50 Valor dos produtos: R$ 48,40 Vai ser delivery ou retirada?
+
+
+
+
+
+
+Cliente:
+Delivery
+
+
+Bot:
+Certo. Me informe o endereço para entrega.
+
+
+
+
+52. Pagamento com cartão ticket pede bandeira
+
+SUCESSO
+Objetivo: Quando cliente diz cartão ticket, o bot não finaliza sem perguntar a bandeira.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Cartão ticket
+
+
+Bot:
+Certo 😊 Pagamento por ticket. Qual é a bandeira do ticket? Alelo Sodexo VR Ticket Ben Pluxee
+
+
+
+
+
+
+Cliente:
+Alelo
+
+
+Bot:
+Perfeito 👍 Pagamento: Ticket Alelo Total do pedido: R$ 65,30 Posso confirmar?
+
+
+
+
+53. Pagamento cartão débito pede bandeira
+
+SUCESSO
+Objetivo: Quando cliente diz débito, o bot deve perguntar a bandeira da máquina.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Débito
+
+
+Bot:
+Certo 😊 Pagamento na máquina: débito. Qual é a bandeira do cartão? Visa Mastercard Elo Hipercard American Express
+
+
+
+
+
+
+Cliente:
+Mastercard
+
+
+Bot:
+Perfeito 👍 Pagamento: débito Mastercard Total do pedido: R$ 92,30 Em torno de 60 minutos para entrega, podendo chegar antes.
+
+
+
+
+54. Cliente pergunta taxa e muda para retirada
+
+SUCESSO
+Objetivo: Quando cliente pergunta taxa, recebe valor; se decidir retirar, bot segue fluxo de retirada.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quanto fica o delivery no Santa Catarina?
+
+
+Bot:
+A taxa de delivery para Santa Catarina é R$ 9,50.
+
+
+
+
+
+
+Cliente:
+Então vou retirar. Tem como deixar pronto perto das 21:20?
+
+
+Bot:
+Certo 👍 Vamos fazer para retirada. Me diga o pedido e em nome de quem podemos deixar.
+
+
+
+
+
+
+Cliente:
+Gabriel. 1 xis quatro queijos sem tomate, com bacon e fritas. 1 coca 2L
+
+
+Bot:
+Anotei: 1 Xis Quatro Queijos — R$ 34,90 Observação: sem tomate Adicional: Bacon — R$ 4,00 Adicional: Fritas — R$ 5,00 Valor do prato: R$ 43,90 1 Coca-Cola 2L — R$ 17,90 Total parcial: R$ 61,80 Retirada em nome de Gabriel, próximo das 21:20. Qual será a forma de pagamento?
+
+
+
+
+55. Pedido com alergia alimentar
+
+ATENDENTE
+Objetivo: Quando cliente menciona alergia, o bot deve chamar atendente para reduzir risco de erro.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero um xis sem maionese porque meu filho é alérgico.
+
+
+Bot:
+Entendi. Produto informado: Xis — valor a partir de R$ 32,90 Como envolve alergia alimentar, vou chamar um atendente para confirmar todos os detalhes com segurança.
+
+
+
+
+56. Pedido muito grande com várias exceções
+
+ATENDENTE
+Objetivo: Inspirado em conversas reais com muitos lanches e exceções; bot deve evitar erro e chamar atendente.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Quero 6 lanches: um sem maionese, outro sem ovo e presunto, outro sem alface, dois sem ervilha, e uma coca 2 litros.
+
+
+Bot:
+Esse pedido tem vários produtos e muitas observações diferentes. Para evitar erro na montagem, vou chamar um atendente para revisar com você 😊
+
+
+
+
+57. Cliente pede sachês e maionese avulsa
+
+SUCESSO
+Objetivo: Bot trata sachês como observação e maionese avulsa como item com quantidade e valor.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Favor mandar sachês e mais uma maionese avulsa.
+
+
+Bot:
+Certo 👍 Observação: enviar sachês. Maionese avulsa — R$ 3,00 Quantidade: 1 Vou adicionar ao pedido.
+
+
+
+
+
+
+Cliente:
+Ok
+
+
+Bot:
+Pedido atualizado. Acréscimo: R$ 3,00 Total atualizado: R$ 117,20
+
+
+
+
+58. Cliente pede aviso quando motoboy sair
+
+SUCESSO
+Objetivo: Bot pode registrar pedido de aviso se o sistema suportar ou responder que avisará por ali.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Avisa por aqui quando o motoboy estiver vindo. Pode ser?
+
+
+Bot:
+Pode sim 😊 Vou avisar por aqui quando o pedido sair para entrega.
+
+
+
+
+Bot:
+Pedido a caminho 🛵
+
+
+
+
+59. Cliente envia foto de combo e pergunta se tem
+
+ATENDENTE
+Objetivo: Se o bot não conseguir identificar produto por imagem, pedir nome/código ou chamar atendente.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Vocês têm esse combo?
+
+
+Bot:
+Não consegui identificar o combo somente pela imagem. Você pode me dizer o nome do produto ou ver o cardápio pelo link: loja.wdelivery.com.br
+
+
+
+
+
+
+Cliente:
+Não sei o nome, é esse da foto
+
+
+Bot:
+Vou chamar um atendente para identificar o combo com segurança 😊
+
+
+
+
+60. Cliente pergunta se está aberto e faz retirada
+
+SUCESSO
+Objetivo: Fluxo comum: pergunta horário, escolhe retirada, informa produtos, nome e prazo.
+
+
+WhatsApp - Atendimento Delivery
+
+
+
+
+Cliente:
+Boa noite, vocês estão trabalhando ainda?
+
+
+Bot:
+Boa noite 😊 Estamos abertos agora. Me diga o que você gostaria de pedir.
+
+
+
+
+
+
+Cliente:
+Vai ser retirada. 1 xis da casa completo e 1 xis salada completo
+
+
+Bot:
+Para evitar erro no pedido, preciso montar um prato por vez 😊 Me envie apenas um prato por vez.
+
+
+
+
+
+
+Cliente:
+1 xis da casa completo
+
+
+Bot:
+Anotei: 1 Xis da Casa completo — R$ 35,90 Valor do prato: R$ 35,90 Deseja adicionar mais algum produto?
+
+
+
+
+
+
+Cliente:
+1 xis salada completo
+
+
+Bot:
+Anotei também: 1 Xis Salada completo — R$ 32,90 Valor do prato: R$ 32,90 Valor dos pratos: R$ 68,80 Em nome de quem podemos deixar o pedido?
+
+
+
+
+
+Checklist de validação do bot
+☐ 1. O bot coleta produtos antes de pedir endereço.
+☐ 2. O bot não oferece bebida automaticamente.
+☐ 3. Quando houver prato/produto definido, o bot informa o valor do prato.
+☐ 4. Quando listar adicionais, apresenta uma opção por linha e com valor.
+☐ 5. Quando o cliente usa “com” em lanche, confirma adicional antes de adicionar.
+☐ 6. Quando o cliente pede dois pratos diferentes, orienta um prato por vez.
+☐ 7. Quando o cliente está consultando cardápio, sabores ou preços, usa loja.wdelivery.com.br.
+☐ 8. Quando o cliente já fez pedido claro, o bot não manda link e segue o fluxo.
+☐ 9. Para delivery, o bot exige endereço suficiente: rua, número e bairro.
+☐ 10. Bairro não cadastrado ou região duvidosa chama atendente.
+☐ 11. Pagamento na máquina deve pedir bandeira.
+☐ 12. Pagamento por ticket deve pedir bandeira do ticket.
+☐ 13. Cancelamento após confirmação, reclamação, desconto, cupom e pós-entrega chamam atendente.

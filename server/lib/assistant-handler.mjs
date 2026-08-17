@@ -1,10 +1,11 @@
 import { openai } from '@ai-sdk/openai'
 import { convertToModelMessages, stepCountIs, streamText } from 'ai'
 import { createAssistantTools } from './assistant-tools.mjs'
+import { getOpenAiApiKey } from './load-env.mjs'
 import { ASSISTANT_SYSTEM_PROMPT } from './system-prompt.mjs'
 
 export async function handleAssistantChat(request) {
-  if (!process.env.OPENAI_API_KEY) {
+  if (!getOpenAiApiKey()) {
     return new Response(
       JSON.stringify({
         error:

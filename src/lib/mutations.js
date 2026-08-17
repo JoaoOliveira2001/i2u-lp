@@ -253,3 +253,14 @@ export async function upsertLinearUserMap({ linearUserId, linearUserName, develo
   if (error) throw error
   return data
 }
+
+export async function fetchSharedCredentials() {
+  const { data, error } = await supabase
+    .from('shared_credentials')
+    .select('*')
+    .order('sort_order', { ascending: true })
+    .order('label', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}

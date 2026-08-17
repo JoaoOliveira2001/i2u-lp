@@ -9,7 +9,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "linear:seed-users": "node scripts/seed-linear-users.mjs",
-    "linear:setup-webhook": "node scripts/setup-linear-webhook.mjs"
+    "linear:setup-webhook": "node scripts/setup-linear-webhook.mjs",
+    "linear:setup-longlife": "node scripts/setup-linear-longlife.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.71",

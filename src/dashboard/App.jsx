@@ -8,6 +8,8 @@ import { Projects } from './pages/Projects'
 import { MonthlyProfit } from './pages/MonthlyProfit'
 import { Team } from './pages/Team'
 import { RecentHours } from './pages/RecentHours'
+import { Passwords } from './pages/Passwords'
+import { BotMonitor } from './pages/BotMonitor'
 
 const AUTH_KEY = 'i2u_dashboard_auth'
 
@@ -100,7 +102,11 @@ export default function App() {
 
   let content
 
-  if (loading) {
+  if (page === 'passwords') {
+    content = <Passwords />
+  } else if (page === 'bot-g2l') {
+    content = <BotMonitor />
+  } else if (loading) {
     content = <p className="loading">Carregando dados...</p>
   } else if (error) {
     content = <div className="error-banner">{error}</div>
