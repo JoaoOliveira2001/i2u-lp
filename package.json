@@ -4,18 +4,30 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -n vite,api -c green,cyan \"vite\" \"node server/dev-api.mjs\"",
+    "dev:vite": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "linear:seed-users": "node scripts/seed-linear-users.mjs",
+    "linear:setup-webhook": "node scripts/setup-linear-webhook.mjs",
+    "linear:setup-longlife": "node scripts/setup-linear-longlife.mjs"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.71",
+    "@ai-sdk/react": "^3.0.208",
+    "@supabase/supabase-js": "^2.49.8",
+    "ai": "^6.0.206",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "recharts": "^2.15.3",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^9.1.2",
+    "dotenv": "^16.4.7",
     "vite": "^5.0.8"
   }
 }

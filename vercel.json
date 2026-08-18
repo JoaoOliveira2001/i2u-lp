@@ -1,0 +1,11 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/landing.html", "destination": "/" },
+    { "source": "/horas", "destination": "/horas.html" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/poc-restaurante", "destination": "/poc-restaurante.html" },
+    { "source": "/cliente/:slug", "destination": "/cliente.html" }
+  ]
+}
