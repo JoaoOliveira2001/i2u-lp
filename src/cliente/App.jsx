@@ -89,7 +89,7 @@ export function App() {
             </div>
             {slug === 'longlife' && (
               <a
-                href="/docs-longlife-v2.html"
+                href="/docs/longlife"
                 target="_blank"
                 rel="noreferrer"
                 className="btn-cliente btn-cliente--ghost btn-cliente--docs"

@@ -9,6 +9,8 @@ function clientPortalDevRewrite() {
         const path = req.url?.split('?')[0] || ''
         if (/^\/cliente\/[^/]+/.test(path)) {
           req.url = '/cliente.html'
+        } else if (/^\/docs\/[^/]+/.test(path)) {
+          req.url = '/docs/longlife.html'
         }
         next()
       })
@@ -37,8 +39,7 @@ export default defineConfig(({ mode }) => {
           dashboard: 'dashboard.html',
           pocRestaurante: 'poc-restaurante.html',
           cliente: 'cliente.html',
-          docsLonglife: 'docs-longlife.html',
-          docsLonglifeV2: 'docs-longlife-v2.html',
+          docsLonglife: 'docs/longlife.html',
         },
       },
     },
