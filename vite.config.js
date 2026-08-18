@@ -38,6 +38,7 @@ export default defineConfig(({ mode }) => {
           pocRestaurante: 'poc-restaurante.html',
           cliente: 'cliente.html',
           docsLonglife: 'docs-longlife.html',
+          docsLonglifeV2: 'docs-longlife-v2.html',
         },
       },
     },
