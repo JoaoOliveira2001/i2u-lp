@@ -6,6 +6,7 @@
     { "source": "/horas", "destination": "/horas.html" },
     { "source": "/dashboard", "destination": "/dashboard.html" },
     { "source": "/poc-restaurante", "destination": "/poc-restaurante.html" },
-    { "source": "/cliente/:slug", "destination": "/cliente.html" }
+    { "source": "/cliente/:slug", "destination": "/cliente.html" },
+    { "source": "/docs/longlife", "destination": "/docs/longlife.html" }
   ]
 }
