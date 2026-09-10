@@ -4,6 +4,7 @@ import { HoursProgress } from './components/HoursProgress'
 import { ProjectOverview } from './components/ProjectOverview'
 import { OpenTasksList } from './components/OpenTasksList'
 import { HoursLog } from './components/HoursLog'
+import { LonglifeNav } from './components/LonglifeNav'
 
 function getPortalSlug() {
   const parts = window.location.pathname.split('/').filter(Boolean)
@@ -11,11 +12,48 @@ function getPortalSlug() {
   return ''
 }
 
+function PortalBody({ data }) {
+  return (
+    <>
+      <header className="cliente-header">
+        <div className="cliente-header__row">
+          <div className="cliente-brand">
+            <span className="brand__dot" />
+            <div>
+              <p className="cliente-kicker">Long Life</p>
+              <h1>{data.projectName}</h1>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <ProjectOverview
+        linear={data.linear}
+        openTasksCount={data.openTasksCount}
+        taskSummary={data.taskSummary}
+      />
+
+      <HoursSummary hours={data.hours} monthLabel={data.monthLabel} />
+
+      <HoursProgress hours={data.hours} monthLabel={data.monthLabel} />
+
+      <section className="cliente-panel">
+        <OpenTasksList tasks={data.openTasks} linear={data.linear} />
+      </section>
+
+      <section className="cliente-panel">
+        <HoursLog entries={data.entriesThisMonth} monthLabel={data.monthLabel} />
+      </section>
+    </>
+  )
+}
+
 export function App() {
   const slug = getPortalSlug()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const isLonglife = slug === 'longlife'
 
   useEffect(() => {
     let cancelled = false
@@ -52,24 +90,48 @@ export function App() {
   }, [slug])
 
   if (loading) {
+    const inner = (
+      <div className="cliente-loading-wrap">
+        <span className="brand__dot brand__dot--pulse" />
+        <p className="cliente-loading">Carregando portal...</p>
+      </div>
+    )
+    if (isLonglife) {
+      return (
+        <div className="cliente-page ll-page">
+          <LonglifeNav active="inicio">{inner}</LonglifeNav>
+        </div>
+      )
+    }
     return (
       <div className="cliente-page">
-        <div className="cliente-shell">
-          <div className="cliente-loading-wrap">
-            <span className="brand__dot brand__dot--pulse" />
-            <p className="cliente-loading">Carregando portal...</p>
-          </div>
-        </div>
+        <div className="cliente-shell">{inner}</div>
       </div>
     )
   }
 
   if (error) {
+    const inner = <div className="cliente-error">{error}</div>
+    if (isLonglife) {
+      return (
+        <div className="cliente-page ll-page">
+          <LonglifeNav active="inicio">{inner}</LonglifeNav>
+        </div>
+      )
+    }
     return (
       <div className="cliente-page">
-        <div className="cliente-shell">
-          <div className="cliente-error">{error}</div>
-        </div>
+        <div className="cliente-shell">{inner}</div>
+      </div>
+    )
+  }
+
+  if (isLonglife) {
+    return (
+      <div className="cliente-page ll-page">
+        <LonglifeNav active="inicio">
+          <PortalBody data={data} />
+        </LonglifeNav>
       </div>
     )
   }
@@ -87,16 +149,6 @@ export function App() {
                 <p className="cliente-subtitle">Portal do cliente · {data.monthLabel}</p>
               </div>
             </div>
-            {slug === 'longlife' && (
-              <a
-                href="/docs/longlife"
-                target="_blank"
-                rel="noreferrer"
-                className="btn-cliente btn-cliente--ghost btn-cliente--docs"
-              >
-                Documentação Long Life ↗
-              </a>
-            )}
           </div>
         </header>
 
