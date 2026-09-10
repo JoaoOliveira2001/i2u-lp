@@ -31,6 +31,16 @@ npm run dev
 
 3. Abra o navegador em `http://localhost:5173`
 
+Ferramentas internas (mesmo app Vite, rotas próprias):
+
+| Rota | Página |
+| --- | --- |
+| `/horas` | Registro de horas |
+| `/dashboard` | Lucratividade i2u |
+| `/investimento-midia` | LON-22 — investimento de mídia (LongLife / Bragança) |
+
+`/investimento-midia` lista campanhas do catálogo CRM (`investimento_midia_catalogo`) e grava só o valor/mês em `investimento_midia` no projeto Supabase **i2u-lucro** (`projects.slug = longlife`, unidade v1 `braganca`). Campo vazio apaga o lançamento — sem spend, o CAC no Metabase fica NULL. Usa `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` (anon/publishable apenas).
+
 ### Build para Produção
 
 ```bash
