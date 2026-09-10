@@ -3,168 +3,97 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#e8f2f2" />
-    <meta name="description" content="Lançamento de investimento de mídia por campanha — Long Life Bragança" />
-    <title>Long Life · Investimento de mídia</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='10' fill='%232a7a78'/%3E%3C/svg%3E" />
+    <meta name="theme-color" content="#050507" />
+    <meta name="description" content="Investimento por campanha — Long Life" />
+    <title>Long Life · Investimento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/src/investimento-midia/styles.css" />
   </head>
   <body>
     <a class="skip" href="#main">Ir ao conteúdo</a>
-    <div class="app">
-      <aside class="sidebar" id="sidebar" aria-label="Navegação">
-        <div class="brand">
+    <div class="ll-app">
+      <aside class="ll-sidebar" id="sidebar" aria-label="Navegação">
+        <div class="ll-brand">
+          <span class="brand__dot"></span>
           <strong>Long Life</strong>
-          <span>Investimento de mídia</span>
         </div>
-        <nav class="nav" id="sidebarNav" aria-label="Seções"></nav>
-        <div class="sidebar-links" id="sidebarLinks"></div>
-        <p class="sidebar-foot">Long Life · Bragança · LON-22</p>
+        <nav class="ll-nav" aria-label="Seções">
+          <a class="ll-nav__link" href="/cliente/longlife">Início</a>
+          <a class="ll-nav__link is-active" href="/investimento-midia" aria-current="page">Investimento</a>
+          <a class="ll-nav__link" href="/docs/longlife">Documentação</a>
+        </nav>
       </aside>
-
-      <div class="main">
-        <header class="topbar">
-          <button type="button" class="icon-btn" id="btnMenu" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">
+      <div class="ll-column">
+        <header class="ll-topbar">
+          <button type="button" class="ll-icon-btn" id="btnMenu" aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">
             <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
               <path fill="currentColor" d="M3 5h14v1.5H3V5zm0 4.25h14v1.5H3v-1.5zM3 13.5h14V15H3v-1.5z"/>
             </svg>
           </button>
-          <h1 id="topbarTitle">Investimento por campanha</h1>
+          <h1>Investimento</h1>
         </header>
 
-        <main id="main" class="content">
-          <section class="panel" data-panel="investimento">
-            <div class="page-head">
-              <h1>Investimento por campanha</h1>
-              <p>Valor no mês de entrada do lead. Campanhas vêm do CRM; o que salvar aqui entra no CAC.</p>
-            </div>
+        <main id="main" class="ll-main">
+          <header class="page-head">
+            <p class="kicker">Long Life</p>
+            <h1>Investimento por campanha</h1>
+            <p>Valor no mês em que o lead entrou.</p>
+          </header>
 
-            <div class="progress-line" id="progressCard" hidden>
-              <span id="progressText">0/0 lançadas</span>
-              <div class="progress-bar" aria-hidden="true"><span id="progressBar" style="width:0%"></span></div>
-              <span id="totalText">R$ 0,00 no mês</span>
-            </div>
+          <div class="progress-line" id="progressCard" hidden>
+            <span id="progressText">0/0 lançadas</span>
+            <div class="progress-bar" aria-hidden="true"><span id="progressBar" style="width:0%"></span></div>
+            <span id="totalText">R$ 0,00</span>
+          </div>
 
-            <div class="toolbar">
-              <label>
-                Mês da coorte
-                <div class="month-nav">
-                  <button type="button" class="secondary" id="btnMesPrev" title="Mês anterior" aria-label="Mês anterior">←</button>
-                  <input type="month" id="mes" />
-                  <button type="button" class="secondary" id="btnMesNext" title="Próximo mês" aria-label="Próximo mês">→</button>
-                </div>
-              </label>
-              <label>
-                Buscar campanha
-                <input type="search" id="busca" placeholder="ex.: Facebook" autocomplete="off" />
-              </label>
-              <label>
-                Ordenar
-                <select id="ordenacao">
-                  <option value="pendentes">Pendentes primeiro</option>
-                  <option value="alfabetica">Alfabética</option>
-                  <option value="leads">Mais leads</option>
-                </select>
-              </label>
-              <div class="actions">
-                <button type="button" id="btnSalvar">Salvar mês</button>
-                <button type="button" class="secondary" id="btnCopiarMes">Copiar mês anterior</button>
-                <button type="button" class="secondary" id="btnRecarregar">Recarregar</button>
+          <div class="toolbar">
+            <label>
+              Mês
+              <div class="month-nav">
+                <button type="button" class="secondary" id="btnMesPrev" title="Mês anterior" aria-label="Mês anterior">←</button>
+                <input type="month" id="mes" />
+                <button type="button" class="secondary" id="btnMesNext" title="Próximo mês" aria-label="Próximo mês">→</button>
               </div>
+            </label>
+            <label>
+              Buscar
+              <input type="search" id="busca" placeholder="Campanha" autocomplete="off" />
+            </label>
+            <label>
+              Ordenar
+              <select id="ordenacao">
+                <option value="pendentes">Pendentes primeiro</option>
+                <option value="alfabetica">Alfabética</option>
+                <option value="leads">Mais leads</option>
+              </select>
+            </label>
+            <div class="actions">
+              <button type="button" id="btnSalvar">Salvar</button>
+              <button type="button" class="secondary" id="btnCopiarMes">Copiar mês anterior</button>
+              <button type="button" class="secondary" id="btnRecarregar">Recarregar</button>
             </div>
+          </div>
 
-            <div class="status-row">
-              <p class="status" id="status" role="status">Carregando campanhas…</p>
-              <button type="button" class="secondary" id="btnRetry" hidden>Tentar de novo</button>
-            </div>
-            <div id="tabelaWrap"></div>
-          </section>
-
-          <section class="panel" data-panel="como-funciona" hidden>
-            <div class="page-head">
-              <h1>Como funciona</h1>
-              <p>A regra que muda o CAC. Leia uma vez; na tela de trabalho só entram os números.</p>
-            </div>
-            <div class="prose">
-              <h2>Mês de entrada, não de veiculação</h2>
-              <p>
-                O mês da coorte é o mês em que o lead <strong>entrou</strong> no CRM.
-                Um lead que chegou em janeiro e fechou em agosto entra no CAC de janeiro.
-              </p>
-              <h2>Campo vazio e zero</h2>
-              <ul>
-                <li><strong>Vazio</strong> apaga o lançamento. O Metabase deixa CAC e % de aquisição em branco.</li>
-                <li><strong>Zero</strong> grava R$ 0: houve campanha, o gasto foi zero.</li>
-              </ul>
-              <h2>De onde vêm as campanhas</h2>
-              <p>
-                A lista é a VIEW <code>investimento_midia_catalogo</code> no CRM (unidade Bragança).
-                Não se cria campanha nesta tela.
-              </p>
-              <h2>Para onde vai o valor</h2>
-              <p>
-                Grava em <code>investimento_midia</code> no Supabase Bragança, unique por unidade + mês + campanha.
-                O dashboard 4 lê o mesmo banco, sem sync extra.
-              </p>
-              <p>
-                <a href="https://metabase.integration2u.com/dashboard/4" target="_blank" rel="noreferrer">Abrir dashboard CAC</a>
-              </p>
-            </div>
-          </section>
-
-          <section class="panel" data-panel="resumo" hidden>
-            <div class="page-head">
-              <h1>Resumo do mês</h1>
-              <p id="resumoMesLabel">Coorte do mês selecionado na tela de lançamento.</p>
-            </div>
-            <dl class="dl" id="resumoDl">
-              <div><dt>Campanhas lançadas</dt><dd id="resumoLancadas">-</dd></div>
-              <div><dt>Ainda sem lançamento</dt><dd id="resumoPendentes">-</dd></div>
-              <div><dt>Alterações não salvas</dt><dd id="resumoDirty">-</dd></div>
-              <div><dt>Total no rascunho</dt><dd id="resumoTotal">-</dd></div>
-            </dl>
-            <p class="back-link">
-              <a href="#investimento">Voltar ao lançamento</a>
-            </p>
-          </section>
-
-          <section class="panel" data-panel="historico" hidden>
-            <div class="page-head">
-              <h1>Histórico / auditoria</h1>
-              <p>Quem mudou o quê, e quando. Ainda não está nesta versão.</p>
-            </div>
-            <div class="soon-box">
-              Em breve: trilha de alterações por campanha (nome, valor anterior, valor novo, horário).
-              Por agora o nome em Configurações já grava em <code>atualizado_por</code> a cada salvamento.
-            </div>
-          </section>
-
-          <section class="panel" data-panel="configuracoes" hidden>
-            <div class="page-head">
-              <h1>Configurações</h1>
-              <p>Identificação para auditoria. Sem login nesta versão.</p>
-            </div>
-            <div class="settings">
-              <label>
-                Seu nome (auditoria)
-                <input type="text" id="quem" placeholder="ex.: João" autocomplete="name" />
-              </label>
-              <label>
-                Unidade
-                <div class="readonly" id="unidadeLabel">Bragança</div>
-              </label>
-            </div>
-          </section>
+          <div class="status-row">
+            <p class="status" id="status" role="status">Carregando…</p>
+            <button type="button" class="secondary" id="btnRetry" hidden>Tentar de novo</button>
+          </div>
+          <div id="tabelaWrap"></div>
         </main>
       </div>
     </div>
 
-    <div class="scrim" id="scrim"></div>
+    <div class="ll-scrim" id="scrim"></div>
 
     <div class="sticky-save" id="stickySave">
       <div class="sticky-inner">
         <span id="stickyText">0 alterações não salvas</span>
-        <button type="button" id="btnSalvarSticky">Salvar agora</button>
+        <button type="button" id="btnSalvarSticky">Salvar</button>
       </div>
     </div>
 

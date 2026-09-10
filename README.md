@@ -37,9 +37,9 @@ Ferramentas internas (mesmo app Vite, rotas próprias):
 | --- | --- |
 | `/horas` | Registro de horas |
 | `/dashboard` | Lucratividade i2u |
-| `/investimento-midia` | LON-22 — investimento de mídia (Long Life / Bragança) |
+| `/investimento-midia` | Investimento por campanha (Long Life) |
 
-`/investimento-midia` fala com o Supabase **Bragança** (não o i2u-lucro). Detalhe em `src/investimento-midia/README.md`.
+Acesso pelo portal `/cliente/longlife`.
 
 ### Build para Produção
 
