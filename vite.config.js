@@ -5,10 +5,10 @@ function applyClientPortalRewrites(req) {
   const path = req.url?.split('?')[0] || ''
   if (/^\/cliente\/[^/]+/.test(path)) {
     req.url = '/cliente.html'
-  } else if (/^\/docs\/[^/]+/.test(path)) {
-    req.url = '/docs/longlife.html'
   } else if (path === '/investimento-midia' || path === '/investimento-midia/') {
     req.url = '/investimento-midia.html'
+  } else if (/^\/docs\/[^/]+/.test(path)) {
+    req.url = '/docs/longlife.html'
   }
 }
 
