@@ -7,7 +7,7 @@ const CFG = {
 const QUEM_KEY = 'll_investimento_quem'
 
 const els = {
-  mes: document.getElementById('mes'),
+  dia: document.getElementById('dia'),
   busca: document.getElementById('busca'),
   ordenacao: document.getElementById('ordenacao'),
   status: document.getElementById('status'),
@@ -15,9 +15,9 @@ const els = {
   btnSalvar: document.getElementById('btnSalvar'),
   btnSalvarSticky: document.getElementById('btnSalvarSticky'),
   btnRecarregar: document.getElementById('btnRecarregar'),
-  btnCopiarMes: document.getElementById('btnCopiarMes'),
-  btnMesPrev: document.getElementById('btnMesPrev'),
-  btnMesNext: document.getElementById('btnMesNext'),
+  btnCopiarDia: document.getElementById('btnCopiarDia'),
+  btnDiaPrev: document.getElementById('btnDiaPrev'),
+  btnDiaNext: document.getElementById('btnDiaNext'),
   btnRetry: document.getElementById('btnRetry'),
   btnMenu: document.getElementById('btnMenu'),
   progressCard: document.getElementById('progressCard'),
@@ -35,20 +35,29 @@ let savedByCampanha = {}
 let draftByCampanha = {}
 let drawerOpen = false
 
-function ymNow() {
-  const d = new Date()
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+function diaHoje() {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date())
 }
 
-function periodoMes() {
-  const ym = els.mes.value
-  return ym ? `${ym}-01` : null
+function periodoDia() {
+  return els.dia.value || null
 }
 
-function shiftMonth(delta) {
-  const [y, m] = els.mes.value.split('-').map(Number)
-  const d = new Date(y, m - 1 + delta, 1)
-  els.mes.value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+function shiftIsoDate(iso, deltaDays) {
+  const [y, m, d] = iso.split('-').map(Number)
+  const dt = new Date(Date.UTC(y, m - 1, d + deltaDays))
+  return dt.toISOString().slice(0, 10)
+}
+
+function shiftDay(delta) {
+  const current = periodoDia()
+  if (!current) return
+  els.dia.value = shiftIsoDate(current, delta)
   reload()
 }
 
@@ -131,14 +140,14 @@ async function loadCatalogo() {
   catalogo = (await rest(q)) || []
 }
 
-async function loadMes(mes) {
-  const target = mes || periodoMes()
+async function loadDia(dia) {
+  const target = dia || periodoDia()
   if (!target) return {}
   const q =
     'investimento_midia?select=campanha,valor_investimento,atualizado_em,atualizado_por' +
     '&unidade=eq.' +
     CFG.unidade +
-    '&periodo_mes=eq.' +
+    '&periodo_dia=eq.' +
     target +
     '&order=campanha'
   const rows = (await rest(q)) || []
@@ -149,8 +158,8 @@ async function loadMes(mes) {
   return map
 }
 
-async function loadMesAtual() {
-  const map = await loadMes()
+async function loadDiaAtual() {
+  const map = await loadDia()
   savedByCampanha = map
   draftByCampanha = {}
   Object.keys(map).forEach((campanha) => {
@@ -207,7 +216,7 @@ function rowTag(campanha) {
   return '<span class="tag empty" data-tag="' + esc(campanha) + '">pendente</span>'
 }
 
-function monthStats() {
+function dayStats() {
   const total = catalogo.length
   const launched = catalogo.filter((item) => {
     const c = item.campanha
@@ -225,7 +234,7 @@ function monthStats() {
 }
 
 function updateProgress() {
-  const s = monthStats()
+  const s = dayStats()
   const pct = s.total ? Math.round((s.launched / s.total) * 100) : 0
   els.progressCard.hidden = s.total === 0
   els.progressText.textContent = s.launched + '/' + s.total + ' lançadas'
@@ -328,7 +337,7 @@ async function reload() {
   els.btnSalvar.disabled = true
   try {
     await loadCatalogo()
-    await loadMesAtual()
+    await loadDiaAtual()
     render(true)
     setStatus(catalogo.length + ' campanhas')
   } catch (err) {
@@ -338,15 +347,13 @@ async function reload() {
   }
 }
 
-async function copiarMesAnterior() {
-  const mes = periodoMes()
-  if (!mes) return
-  const [y, m] = mes.split('-').map(Number)
-  const prev = new Date(y, m - 2, 1)
-  const prevMes = `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}-01`
-  setStatus('Copiando mês anterior…')
+async function copiarDiaAnterior() {
+  const dia = periodoDia()
+  if (!dia) return
+  const prevDia = shiftIsoDate(dia, -1)
+  setStatus('Copiando dia anterior…')
   try {
-    const prevMap = await loadMes(prevMes)
+    const prevMap = await loadDia(prevDia)
     let n = 0
     catalogo.forEach((item) => {
       const c = item.campanha
@@ -358,8 +365,8 @@ async function copiarMesAnterior() {
     render(false)
     setStatus(
       n
-        ? n + ' campanhas preenchidas do mês anterior (ainda não salvo).'
-        : 'Nada a copiar do mês anterior.',
+        ? n + ' campanhas preenchidas do dia anterior (ainda não salvo).'
+        : 'Nada a copiar do dia anterior.',
     )
   } catch (err) {
     setStatus('Erro: ' + err.message, 'err')
@@ -372,15 +379,15 @@ function quemSalva() {
 }
 
 async function save() {
-  const mes = periodoMes()
-  if (!mes) {
-    setStatus('Escolha o mês.', 'err')
+  const dia = periodoDia()
+  if (!dia) {
+    setStatus('Escolha o dia.', 'err')
     return
   }
   const quem = quemSalva()
   const dirty = dirtyCampanhas()
   if (!dirty.length) {
-    setStatus('Nada para salvar neste mês.')
+    setStatus('Nada para salvar neste dia.')
     return
   }
   els.btnSalvar.disabled = true
@@ -392,8 +399,8 @@ async function save() {
       const qs =
         'investimento_midia?unidade=eq.' +
         CFG.unidade +
-        '&periodo_mes=eq.' +
-        mes +
+        '&periodo_dia=eq.' +
+        dia +
         '&campanha=eq.' +
         encodeURIComponent(campanha)
       if (raw === '') {
@@ -404,13 +411,13 @@ async function save() {
       if (!Number.isFinite(valor) || valor < 0) {
         throw new Error('Valor inválido em “' + campanha + '”')
       }
-      await rest('investimento_midia?on_conflict=unidade,periodo_mes,campanha', {
+      await rest('investimento_midia?on_conflict=unidade,periodo_dia,campanha', {
         method: 'POST',
         headers: { Prefer: 'resolution=merge-duplicates,return=minimal' },
         body: [
           {
             unidade: CFG.unidade,
-            periodo_mes: mes,
+            periodo_dia: dia,
             campanha,
             valor_investimento: valor,
             atualizado_por: quem,
@@ -418,7 +425,7 @@ async function save() {
         ],
       })
     }
-    await loadMesAtual()
+    await loadDiaAtual()
     render(false)
     setStatus('Salvo.', 'ok')
   } catch (err) {
@@ -429,15 +436,15 @@ async function save() {
   }
 }
 
-els.mes.value = ymNow()
-els.mes.addEventListener('change', reload)
+els.dia.value = diaHoje()
+els.dia.addEventListener('change', reload)
 els.busca.addEventListener('input', () => render(false))
 els.ordenacao.addEventListener('change', () => render(false))
 els.btnRecarregar.addEventListener('click', reload)
 els.btnRetry.addEventListener('click', reload)
-els.btnCopiarMes.addEventListener('click', copiarMesAnterior)
-els.btnMesPrev.addEventListener('click', () => shiftMonth(-1))
-els.btnMesNext.addEventListener('click', () => shiftMonth(1))
+els.btnCopiarDia.addEventListener('click', copiarDiaAnterior)
+els.btnDiaPrev.addEventListener('click', () => shiftDay(-1))
+els.btnDiaNext.addEventListener('click', () => shiftDay(1))
 els.btnSalvar.addEventListener('click', save)
 els.btnSalvarSticky.addEventListener('click', save)
 els.btnMenu.addEventListener('click', () => (drawerOpen ? closeDrawer() : openDrawer()))

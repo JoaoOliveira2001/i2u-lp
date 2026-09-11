@@ -264,7 +264,7 @@ input, button, select {
   font-size: 1rem;
 }
 
-input[type="month"],
+input[type="date"],
 input[type="text"],
 input[type="number"],
 input[type="search"],
@@ -274,17 +274,23 @@ select {
   border: 1px solid var(--line);
   background: var(--surface-2);
   color: var(--text);
+  color-scheme: dark;
 }
 
-.month-nav {
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.85);
+  cursor: pointer;
+}
+
+.day-nav {
   display: flex;
   gap: 0.35rem;
   align-items: center;
 }
 
-.month-nav input { flex: 1 1 auto; min-width: 0; }
+.day-nav input { flex: 1 1 auto; min-width: 9.5rem; }
 
-.month-nav button {
+.day-nav button {
   padding: 0;
   min-width: 2.75rem;
   min-height: 2.75rem;
