@@ -1,24 +1,27 @@
 import { useState } from 'react'
-import { automations, infra } from '../docs-longlife/data'
+import { automations, automationsJundiai, infra } from '../docs-longlife/data'
 
-function UnitNav() {
-  const units = [
-    { name: 'Bragança', state: 'Documentada', active: true },
-    { name: 'Jundiaí', state: 'Em breve', active: false },
-  ]
+const N8N_BASE = 'https://n8n.unificahub.com.br'
 
+const UNITS = [
+  { id: 'braganca', name: 'Bragança', funnel: 'Bragança · funil 6777', automations },
+  { id: 'jundiai', name: 'Jundiaí', funnel: 'Jundiaí · funil 7175', automations: automationsJundiai },
+]
+
+function UnitNav({ unit, onChange }) {
   return (
     <aside className="nav">
       <div className="nav__block">
         <p className="nav__eyebrow">Unidades</p>
-        {units.map((u) => (
+        {UNITS.map((u) => (
           <a
-            key={u.name}
-            href={u.active ? '#automacoes' : undefined}
-            className={`nav__link ${u.active ? 'is-active' : ''}`}
+            key={u.id}
+            href="#automacoes"
+            onClick={() => onChange(u.id)}
+            className={`nav__link ${unit === u.id ? 'is-active' : ''}`}
           >
             <span className="nav__name">{u.name}</span>
-            <span className="nav__state">{u.state}</span>
+            <span className="nav__state">Documentada</span>
           </a>
         ))}
       </div>
@@ -76,7 +79,7 @@ function Automation({ a, index }) {
           <span className="meta__k">ID n8n</span>
           <a
             className="meta__v meta__link"
-            href={`https://auto.unificahub.com.br/workflow/${a.workflowId}`}
+            href={`${N8N_BASE}/workflow/${a.workflowId}`}
             target="_blank"
             rel="noreferrer"
           >
@@ -110,6 +113,9 @@ function Table({ headers, rows, render }) {
 }
 
 export function App() {
+  const [unit, setUnit] = useState('braganca')
+  const active = UNITS.find((u) => u.id === unit) || UNITS[0]
+
   return (
     <div className="page">
       <header className="topbar">
@@ -126,11 +132,11 @@ export function App() {
       </header>
 
       <div className="layout">
-        <UnitNav />
+        <UnitNav unit={unit} onChange={setUnit} />
 
         <main className="content">
           <header className="hero">
-            <p className="hero__eyebrow">Bragança · funil 6777</p>
+            <p className="hero__eyebrow">{active.funnel}</p>
             <h1 className="hero__title">Automações do atendimento</h1>
             <p className="hero__lede">
               Como um lead entra, é atendido, qualificado e chega ao consultor.
@@ -150,17 +156,17 @@ export function App() {
 
           <section className="block" id="automacoes">
             <h2 className="block__title">As automações</h2>
-            {automations.map((a, i) => (
+            {active.automations.map((a, i) => (
               <Automation a={a} index={i} key={a.id} />
             ))}
           </section>
 
           <section className="block">
-            <h2 className="block__title">Alerta de bugs no Discord</h2>
+            <h2 className="block__title">Alerta de operação</h2>
             <p className="block__text">
-              Cada chamada ao CRM é checada. Fora de 2xx ou body com erro, o
-              workflow <code>Alerta_Discord_CRM</code> deduplica (15 min) e publica
-              um embed no canal. A falha nunca interrompe o fluxo.
+              Cada chamada ao CRM é checada. Fora de 2xx ou body com erro, o hub
+              <code>Alerta_Ops_LongLife</code> deduplica e publica um alerta em
+              cascata (Cursor → WhatsApp → Discord). A falha nunca interrompe o fluxo.
             </p>
           </section>
 
