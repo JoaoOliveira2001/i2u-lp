@@ -9,6 +9,8 @@ function applyClientPortalRewrites(req) {
     req.url = '/investimento-midia.html'
   } else if (/^\/docs\/[^/]+/.test(path)) {
     req.url = '/docs/longlife.html'
+  } else if (path === '/filas' || path === '/filas/') {
+    req.url = '/filas.html'
   }
 }
 
@@ -53,6 +55,7 @@ export default defineConfig(({ mode }) => {
           pocRestaurante: 'poc-restaurante.html',
           cliente: 'cliente.html',
           docsLonglife: 'docs/longlife.html',
+          filas: 'filas.html',
         },
       },
     },
