@@ -2,23 +2,22 @@
 
 ## Theme
 
-Light, neutros levemente esverdeados. Cena: gestor de operação da Long Life, no notebook sobre a mesa, luz do dia, durante o horário comercial, querendo em segundos saber quem está atendendo e quem saiu no almoço. Superfície clara e calma; cor reservada para estado.
+Dark, alinhado ao portal do cliente Long Life. Cena: gestor de operação da Long Life, no notebook, acompanhando a fila girando em tempo real; superfície escura para leitura prolongada e verde neon reservado para estado e ação.
 
 ## Color
 
-Estratégia restrita (neutros tingidos + acento ≤10%) com cores de estado funcionais.
+Paleta idêntica ao `/cliente/longlife` (tokens em `src/cliente/styles.css`):
 
-- Neutros em OKLCH tingidos para o hue do acento (chroma 0.006–0.012).
-- Acento: verde-teal profundo (saúde), `oklch(0.52 0.09 165)`.
-- Estado:
-  - disponível/ativo: `oklch(0.62 0.15 150)`
-  - em pausa: `oklch(0.72 0.14 75)` (âmbar)
-  - inativo: neutro `oklch(0.62 0.01 165)`
-  - atenção/fora da janela: `oklch(0.55 0.10 250)`
-- Nunca `#000`/`#fff`. Sem gradiente em texto.
+- `--bg #050507`, `--bg-soft #0a0a0e`, `--surface #101015`, `--surface-2 #16161d`
+- `--line rgba(255,255,255,.08)`, `--line-strong rgba(255,255,255,.16)`
+- `--text #f4f4f6`, `--muted #9b9ba6`, `--faint #5c5c66`
+- `--accent #00ff88`, `--accent-dim rgba(0,255,136,.12)`, `--accent-glow rgba(0,255,136,.35)`
+- `--warn #ffb347`, `--danger #ff5c7a`
+- Fundo com glow radial sutil (verde) como no portal. Sem gradiente em texto.
 
 ## Typography
 
+- Display/títulos: Space Grotesk (500/600/700).
 - UI: Inter (400/500/600).
 - Números, ordem, tempos e IDs: JetBrains Mono, tabular.
 - Corpo limitado a ~70ch; hierarquia por escala + peso (razão ≥1.25).

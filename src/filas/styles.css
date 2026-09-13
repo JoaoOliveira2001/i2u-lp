@@ -1,16 +1,24 @@
 :root {
-  --bg: oklch(0.975 0.006 165);
-  --surface: oklch(0.995 0.004 165);
-  --ink: oklch(0.24 0.02 165);
-  --muted: oklch(0.52 0.015 165);
-  --line: oklch(0.9 0.008 165);
-  --line-strong: oklch(0.84 0.01 165);
-  --accent: oklch(0.52 0.09 165);
-  --ok: oklch(0.58 0.14 150);
-  --warn: oklch(0.72 0.14 75);
-  --off: oklch(0.62 0.01 165);
+  color-scheme: dark;
+  --bg: #050507;
+  --bg-soft: #0a0a0e;
+  --surface: #101015;
+  --surface-2: #16161d;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --text: #f4f4f6;
+  --muted: #9b9ba6;
+  --faint: #5c5c66;
+  --accent: #00ff88;
+  --accent-dim: rgba(0, 255, 136, 0.12);
+  --accent-glow: rgba(0, 255, 136, 0.35);
+  --danger: #ff5c7a;
+  --warn: #ffb347;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: Inter, system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --radius: 10px;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * {
@@ -23,22 +31,27 @@ body {
 }
 
 body {
+  min-height: 100vh;
   background: var(--bg);
-  color: var(--ink);
-  font-family: Inter, system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  font-family: var(--font-body);
   font-size: 14px;
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
 
 .page {
+  min-height: 100vh;
   max-width: 1120px;
   margin: 0 auto;
   padding: 0 24px 40px;
+  background:
+    radial-gradient(circle at 15% -10%, rgba(0, 255, 136, 0.08), transparent 40%),
+    radial-gradient(circle at 85% 0%, rgba(0, 255, 136, 0.04), transparent 35%);
 }
 
 .mono {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
@@ -68,8 +81,8 @@ body {
   justify-content: space-between;
   gap: 16px;
   padding: 16px 0 14px;
-  background: color-mix(in oklch, var(--bg) 88%, transparent);
-  backdrop-filter: blur(8px);
+  background: rgba(5, 5, 7, 0.72);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
 
@@ -84,7 +97,7 @@ body {
   height: 10px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 4px color-mix(in oklch, var(--accent) 16%, transparent);
+  box-shadow: 0 0 0 4px var(--accent-dim), 0 0 16px var(--accent-glow);
 }
 
 .brand__kicker {
@@ -97,8 +110,10 @@ body {
 
 .brand__title {
   margin: 0;
+  font-family: var(--font-display);
   font-size: 17px;
   font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .topbar__right {
@@ -118,11 +133,15 @@ body {
 .quem input {
   width: 150px;
   padding: 7px 10px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
-  color: var(--ink);
+  color: var(--text);
   font: inherit;
+}
+
+.quem input::placeholder {
+  color: var(--faint);
 }
 
 .quem input:focus-visible {
@@ -144,15 +163,15 @@ body {
   border-radius: 8px;
   padding: 7px 12px;
   font: inherit;
-  font-weight: 500;
-  color: oklch(0.99 0.01 165);
+  font-weight: 600;
+  color: var(--bg);
   background: var(--accent);
   cursor: pointer;
   transition: filter 140ms var(--ease), background 140ms var(--ease);
 }
 
 .btn:hover {
-  filter: brightness(1.06);
+  filter: brightness(1.08);
 }
 
 .btn:disabled {
@@ -163,11 +182,11 @@ body {
 .btn--ghost {
   background: transparent;
   color: var(--accent);
-  border-color: var(--line-strong);
+  border-color: rgba(0, 255, 136, 0.35);
 }
 
 .btn--ghost:hover {
-  background: color-mix(in oklch, var(--accent) 8%, transparent);
+  background: var(--accent-dim);
   filter: none;
 }
 
@@ -175,9 +194,10 @@ body {
 .error {
   margin: 16px 0;
   padding: 12px 14px;
-  border: 1px solid color-mix(in oklch, var(--warn) 45%, var(--line));
+  border: 1px solid rgba(255, 92, 122, 0.35);
   border-radius: var(--radius);
-  background: color-mix(in oklch, var(--warn) 12%, var(--surface));
+  background: rgba(255, 92, 122, 0.1);
+  color: #ffc2cd;
 }
 
 .loading {
@@ -212,6 +232,7 @@ body {
 
 .unit__title h2 {
   margin: 0;
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -244,6 +265,7 @@ body {
 
 .stat dd {
   margin: 0;
+  font-family: var(--font-display);
   font-size: 20px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -255,7 +277,7 @@ body {
 }
 
 .stat--pausa dd {
-  color: color-mix(in oklch, var(--warn) 70%, var(--ink));
+  color: var(--warn);
 }
 
 /* table */
@@ -295,11 +317,11 @@ body {
 }
 
 .fila tbody tr:hover {
-  background: color-mix(in oklch, var(--accent) 5%, transparent);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .fila tbody tr.is-pausa {
-  background: color-mix(in oklch, var(--warn) 7%, transparent);
+  background: rgba(255, 179, 71, 0.08);
 }
 
 .num {
@@ -315,10 +337,10 @@ body {
   padding: 1px 6px;
   border-radius: 999px;
   font-size: 10px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--accent);
-  background: color-mix(in oklch, var(--accent) 12%, transparent);
+  background: var(--accent-dim);
   vertical-align: middle;
 }
 
@@ -332,28 +354,31 @@ body {
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line);
   background: var(--surface);
+  color: var(--muted);
 }
 
 .pill__dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--off);
+  background: var(--faint);
 }
 
 .pill--ativo {
-  border-color: color-mix(in oklch, var(--ok) 40%, var(--line));
+  border-color: rgba(0, 255, 136, 0.35);
+  color: var(--accent);
 }
 
 .pill--ativo .pill__dot {
-  background: var(--ok);
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
 }
 
 .pill--pausa {
-  border-color: color-mix(in oklch, var(--warn) 55%, var(--line));
-  color: color-mix(in oklch, var(--warn) 62%, var(--ink));
+  border-color: rgba(255, 179, 71, 0.45);
+  color: var(--warn);
 }
 
 .pill--pausa .pill__dot {
@@ -361,7 +386,7 @@ body {
 }
 
 .pill--inativo {
-  color: var(--muted);
+  color: var(--faint);
 }
 
 /* leads bar */
@@ -369,14 +394,14 @@ body {
   position: relative;
   height: 18px;
   border-radius: 5px;
-  background: color-mix(in oklch, var(--ink) 6%, transparent);
+  background: rgba(255, 255, 255, 0.06);
   overflow: hidden;
 }
 
 .bar__fill {
   position: absolute;
   inset: 0 auto 0 0;
-  background: color-mix(in oklch, var(--accent) 45%, transparent);
+  background: rgba(0, 255, 136, 0.32);
   transition: width 240ms var(--ease);
 }
 
@@ -388,6 +413,7 @@ body {
   padding-left: 8px;
   font-size: 11px;
   font-weight: 500;
+  color: var(--text);
 }
 
 /* action cluster */
@@ -399,10 +425,10 @@ body {
 
 .acao select {
   padding: 6px 8px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
-  color: var(--ink);
+  color: var(--text);
   font: inherit;
   font-size: 12px;
 }
