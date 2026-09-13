@@ -119,7 +119,7 @@ function UnitSection({ unidade, rows, proximo, quem, onDone }) {
             <th scope="col" className="num">Ordem</th>
             <th scope="col">Leads na fila</th>
             <th scope="col">Último lead</th>
-            <th scope="col">Janela</th>
+            <th scope="col">Janela de atendimento</th>
             <th scope="col">Ação</th>
           </tr>
         </thead>

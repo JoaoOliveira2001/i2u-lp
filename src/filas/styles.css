@@ -290,9 +290,9 @@ body {
 .fila col.c-name { width: 22%; }
 .fila col.c-status { width: 15%; }
 .fila col.c-ordem { width: 6%; }
-.fila col.c-leads { width: 18%; }
-.fila col.c-ultimo { width: 12%; }
-.fila col.c-janela { width: 12%; }
+.fila col.c-leads { width: 16%; }
+.fila col.c-ultimo { width: 11%; }
+.fila col.c-janela { width: 15%; }
 .fila col.c-acao { width: 15%; }
 
 .fila th {
