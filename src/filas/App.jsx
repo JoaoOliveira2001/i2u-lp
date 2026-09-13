@@ -3,6 +3,7 @@ import {
   DURACOES,
   MOTIVOS,
   fetchFila,
+  metabaseReportUrl,
   motivoLabel,
   pausarVendedor,
   retomarVendedor,
@@ -284,6 +285,36 @@ export function App() {
           ))}
         </main>
       )}
+
+      <section className="report" aria-labelledby="report-title">
+        <header className="report__head">
+          <h2 id="report-title">Relatório</h2>
+          <span className="report__hint">Metabase · atualiza sozinho</span>
+        </header>
+        <div className="report__grid">
+          {['braganca', 'jundiai'].map((u) => (
+            <article className="embed" key={u}>
+              <div className="embed__head">
+                <span className="embed__unit">{UNIT_META[u]?.label || u}</span>
+                <a
+                  className="embed__open"
+                  href={metabaseReportUrl(u)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Abrir ↗
+                </a>
+              </div>
+              <iframe
+                className="embed__frame"
+                title={`Relatório comercial ${UNIT_META[u]?.label || u}`}
+                src={metabaseReportUrl(u)}
+                loading="lazy"
+              />
+            </article>
+          ))}
+        </div>
+      </section>
 
       <footer className="foot">
         Atualiza a cada 30s · fuso America/Sao_Paulo · pausa some sozinha ao fim do tempo

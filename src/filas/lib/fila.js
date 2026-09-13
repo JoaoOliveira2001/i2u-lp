@@ -66,3 +66,16 @@ export const DURACOES = [30, 60, 90, 120]
 export function motivoLabel(id) {
   return MOTIVOS.find((m) => m.id === id)?.label || 'Pausa'
 }
+
+// Relatório Metabase (embed público do dashboard "Fila & Atendimento LongLife")
+export const METABASE_URL =
+  import.meta.env.VITE_METABASE_URL || 'https://metabase.integration2u.com'
+export const METABASE_DASH_FILA =
+  import.meta.env.VITE_METABASE_DASH_FILA || '5fafea52-8efb-4a14-97bb-fd65508439ee'
+
+export function metabaseReportUrl(unidade) {
+  // Parâmetros do dashboard vão na query (?); opções de embed vão no hash (#).
+  const qs = new URLSearchParams({ unidade })
+  return `${METABASE_URL}/public/dashboard/${METABASE_DASH_FILA}?${qs.toString()}#theme=night&bordered=false&titled=false`
+}
+
