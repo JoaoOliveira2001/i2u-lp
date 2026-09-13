@@ -64,7 +64,7 @@ export const automations = [
       { label: 'Webhook', desc: 'Recebe a chamada do agente do CRM pedindo a transferência para um consultor humano.' },
       { label: 'B1 Validar', desc: 'Interpreta o motivo (qualificado, pediu_humano, tema_sensivel, opt_out etc.), limpa placeholders e normaliza telefone. Descobre de quem é a conversa via inbox se faltar o id.' },
       { label: 'B1b Localizar negociação', desc: 'Busca no CRM os cards que existem agora pelo telefone, para não usar um id antigo ("fantasma").' },
-      { label: 'B2 Fila próximo vendedor', desc: 'Chama a RPC proximo_vendedor no Supabase para girar a roleta e pegar o próximo consultor da fila.' },
+      { label: 'B2 Fila próximo vendedor', desc: 'Chama a RPC proximo_vendedor(p_unidade) no Supabase para girar a roleta da unidade e pegar o próximo consultor da fila.' },
       { label: 'B4 Montar transferência', desc: 'Define o estágio de destino (Qualificado IA ou Declinado), valida o card e monta o patch. Nunca rebaixa card já entregue.' },
       { label: 'B3 Atribuir/mover', desc: 'Atualiza no CRM: id_usuario do vendedor, estágio e próxima ação.' },
       { label: 'B5 Registrar Supabase', desc: 'Grava no chat_sessions o status qualificada/descartada, motivo e observações.' },
@@ -134,7 +134,7 @@ export const automations = [
       { label: 'Listar Funil', desc: 'A cada 5 minutos busca as negociações do funil 6777.' },
       { label: 'Filtrar 130min IA', desc: 'Seleciona quem está há 130 min ou mais em IA atendendo, usando o tempo rastreado em memória (staticData).' },
       { label: 'Tem candidatos?', desc: 'Se houver candidatos, inicia o lote; senão, encerra a execução.' },
-      { label: 'Fila próximo vendedor', desc: 'Gira a roleta (proximo_vendedor) para pegar o consultor — a menos que o lead já tenha um vendedor humano.' },
+      { label: 'Fila próximo vendedor', desc: 'Gira a roleta (proximo_vendedor com a unidade Bragança) para pegar o consultor — a menos que o lead já tenha um vendedor humano.' },
       { label: 'Montar transferência', desc: 'Define estágio 66329, dono do vendedor e monta o patch para CRM e Supabase.' },
       { label: 'Atribuir/mover', desc: 'Atualiza o card no CRM: vendedor, estágio e próxima ação.' },
       { label: 'Registrar Supabase', desc: 'Grava no chat_sessions a transferência (etapa transferida_sem_resposta).' },
@@ -150,10 +150,11 @@ export const automations = [
 
 export const infra = [
   { resource: 'CRM (API Lumion)', value: 'integracao.agendasistemacrm.com.br/api/v1' },
+  { resource: 'n8n', value: 'n8n.unificahub.com.br' },
   { resource: 'Supabase', value: 'jlyqptmxcloouaxumdqu.supabase.co' },
-  { resource: 'Fila de vendedores', value: 'RPC proximo_vendedor' },
-  { resource: 'Agente de IA', value: '17530 (Amil_Braganca_Bot)' },
-  { resource: 'Conexão WhatsApp', value: '24692 (TesteBootDiego)' },
+  { resource: 'Fila de vendedores', value: 'RPC proximo_vendedor(p_unidade) · tabela vendedores_fila' },
+  { resource: 'Agente de IA', value: 'Bragança 17530 (Amil_Braganca_Bot) · Jundiaí 16306 (Agente SDR Jundiaí)' },
+  { resource: 'Conexão WhatsApp', value: 'dinâmica (LON-23): Bragança 27059 · Jundiaí 26926' },
 ]
 
 export const customFields = [
@@ -163,4 +164,168 @@ export const customFields = [
   { field: 'tem_plano_hoje', id: '5281' },
   { field: 'transcrição / resumo', id: '5284' },
   { field: 'qualifica_IA', id: '5587' },
+]
+
+// ---------------------------------------------------------------------------
+// Jundiaí (funil 7175) — mesmo modelo da Bragança, isolado por unidade.
+// ---------------------------------------------------------------------------
+
+export const stagesJundiai = [
+  { id: '46938', name: 'Novo', role: 'Entrada RD / site' },
+  { id: '73692', name: 'IA atendendo', role: 'Bot conversando' },
+  { id: '73693', name: 'Qualificado pela IA', role: 'Fila de trabalho do time' },
+  { id: '46939', name: 'Contato', role: 'Vendedor assumiu (bot nunca escreve aqui)' },
+  { id: '46940', name: 'Qualificação', role: '—' },
+  { id: '46941', name: 'Negociação', role: '—' },
+  { id: '46942', name: 'Fechamento', role: '—' },
+  { id: '46943', name: 'Declinado', role: 'Descarte (opt-out / número errado)' },
+  { id: '54780', name: 'Fechado (ganho)', role: '—' },
+]
+
+export const customFieldsJundiai = [
+  { field: 'tipo_plano', id: '6427' },
+  { field: 'vidas', id: '3470' },
+  { field: 'cidade', id: '3473' },
+  { field: 'tem_plano_hoje', id: '6428' },
+  { field: 'transcrição / resumo', id: '6431' },
+  { field: 'qualifica_IA', id: '6432' },
+  { field: 'motivo de perda', id: '8106' },
+]
+
+export const automationsJundiai = [
+  {
+    id: 'captacao',
+    num: '1',
+    name: 'Captação Jundiaí',
+    short: 'Recebe a conversão da RD Station / LP e coloca o lead na coluna "Novo" (funil 7175).',
+    workflowId: 'SHZ578B2JQgrY393',
+    trigger: 'Webhook POST /webhook/rd-station-jundiai',
+    flow: [
+      { label: 'Webhook RD', desc: 'Porta de entrada que recebe o POST da RD Station a cada conversão de landing page (inclui aliases das LPs gndi-jundiai).' },
+      { label: 'E0b/E1 Normalizar', desc: 'Lê nome/telefone/empresa, valida o telefone (DDD + 9) e infere cidade (Jundiaí) e tipo de plano empresarial quando há Empresa.' },
+      { label: 'E2 Criar negociação', desc: 'Cria a negociação no funil 7175 na coluna "Novo" (46938), sem atribuir vendedor.' },
+      { label: 'E4 Registrar no Supabase', desc: 'Insere a linha em chat_sessions (trigger_type=rdstation) para rastreio.' },
+      { label: 'E5 Responder ao RD', desc: 'Devolve ao RD um resumo (recebidos, criados, ignorados). Sem telefone válido responde 200 ignorando.' },
+    ],
+    notes: [
+      'Não atribui vendedor — a roleta só gira depois da qualificação.',
+      'Normaliza telefone e trata os aliases das LPs *-jundiai.',
+      'A roleta da unidade é a RPC proximo_vendedor(p_unidade="jundiai").',
+    ],
+  },
+  {
+    id: 'trilha',
+    num: '2',
+    name: '2 — Trilha Jundiaí',
+    short: 'Orquestrador: aborda leads em "Novo", dispara a IA e cuida da transferência.',
+    workflowId: 'g81aoz1RbkEtUof9',
+    trigger: 'Cron 1 min + Cron 10 min + Webhook crm-transferir-jundiai',
+    flow: [
+      { label: 'Cron 1min → aborda "Novo"', desc: 'Busca negociações em "Novo" com travas anti-spam, anti-clone e LGPD (respeita opt-out).' },
+      { label: 'C4 Monta contexto', desc: 'Reúne nome, cidade, plano e vidas e prepara a mensagem; resolve o WhatsApp conectado do agente em runtime (LON-23).' },
+      { label: 'C6 Inicia agente IA', desc: 'Chama o agente 16306 (Agente SDR Jundiaí) para iniciar o atendimento no WhatsApp do lead.' },
+      { label: 'C8 Move para IA atendendo', desc: 'Move o card para 73692 (IA atendendo) após o disparo aceito.' },
+      { label: 'Cron 10min → transfere por silêncio', desc: 'Transfere quem não respondeu há ≥ 210 min, girando a roleta da unidade.' },
+      { label: 'C9 Fallback de erro do agente', desc: 'Se o start falhar, entrega o lead em 73693 (Qualificado IA) já com consultor (motivo=erro_agente).' },
+    ],
+    notes: [
+      'Ramo C (1min): aborda leads em Novo com travas anti-spam/anti-clone e LGPD.',
+      'Ramo D (10min): transfere por silêncio quem não respondeu em 210 min.',
+      'Ramo B: transferência manual/por motivo (compartilha nós do fluxo 3.A).',
+    ],
+  },
+  {
+    id: 'transferir',
+    num: '3',
+    name: '3.A — Transferir Jundiaí',
+    short: 'Transfere o lead para consultor humano girando a roleta da unidade (proximo_vendedor).',
+    workflowId: 'v4NwgIY2bwHRMzAC',
+    trigger: 'Webhook POST /webhook/crm-transferir-jundiai',
+    flow: [
+      { label: 'Webhook', desc: 'Recebe a chamada do agente do CRM pedindo a transferência para um consultor humano.' },
+      { label: 'B1 Validar', desc: 'Interpreta o motivo (qualificado, pediu_humano, tema_sensivel, opt_out etc.), limpa placeholders e normaliza telefone. Resolve o id_whatsapp do bot.' },
+      { label: 'B1b Localizar negociação', desc: 'Busca no CRM os cards que existem agora pelo telefone, para não usar id antigo ("fantasma").' },
+      { label: 'B2 Fila próximo vendedor', desc: 'Chama a RPC proximo_vendedor(p_unidade="jundiai") para girar a roleta e pegar o próximo consultor.' },
+      { label: 'B4 Montar transferência', desc: 'Define o estágio de destino (Qualificado IA 73693 ou Declinado 46943), valida o card e monta o patch.' },
+      { label: 'B3 Atribuir/mover', desc: 'Atualiza no CRM: id_usuario do vendedor, estágio e próxima ação.' },
+      { label: 'B5/B6 Registrar e responder', desc: 'Grava no chat_sessions e informa ao agente para quem o lead foi transferido.' },
+      { label: 'B7 Encerrar sessão', desc: 'Encerra a sessão do agente para ele não responder por cima do consultor.' },
+    ],
+    notes: [
+      'Motivos: qualificado, pediu_humano, tema_sensivel, opt_out, numero_errado, sem_resposta.',
+      'opt_out e numero_errado vão para "Declinado" sem gastar a roleta.',
+      'Ferramentas do agente 16306 apontam para /crm-transferir-jundiai (não para a Bragança).',
+    ],
+  },
+  {
+    id: 'qualificado',
+    num: '4',
+    name: '3.B — Qualificado Jundiaí',
+    short: 'Grava a qualificação do agente, calcula o score e encadeia a transferência.',
+    workflowId: 'cg8qBn6xGJw7DJ1J',
+    trigger: 'Webhook POST /webhook/crm-qualificacao-jundiai',
+    flow: [
+      { label: 'Webhook', desc: 'Recebe a qualificação enviada pelo agente ao encerrar a conversa (qualificado ou parcial).' },
+      { label: 'A1 Validar / A1c Resolver id', desc: 'Normaliza os dados e localiza o card correto no CRM pelo id ou telefone.' },
+      { label: 'A2/A3 Gravar', desc: 'Atualiza chat_sessions e a negociação no CRM com os dados da qualificação.' },
+      { label: 'A4/A5 Campos', desc: 'Garante qualifica_IA = sim (6432) e grava os campos personalizados.' },
+      { label: 'A5d Encadear transferência', desc: 'Encadeia automaticamente o webhook crm-transferir-jundiai (motivo qualificado).' },
+    ],
+    notes: [
+      'qualifica_IA (6432) = sim é obrigatório para a trilha Qualifica IA.',
+      'Encadeia a transferência automaticamente (uma ferramenta só).',
+    ],
+  },
+  {
+    id: 'qualifica-ia',
+    num: '5',
+    name: '4 — Qualifica IA Jundiaí',
+    short: 'Move para "Qualificado pela IA" os leads já qualificados pelo bot.',
+    workflowId: '3IzWVpOfHEl7DMPL',
+    trigger: 'Cron a cada 1 min',
+    flow: [
+      { label: 'Listar / Filtrar', desc: 'Varre o funil 7175 e seleciona quem está em 73692 com qualifica_IA=sim (ou 73693 com dono bot).' },
+      { label: 'Encadear transferência', desc: 'Encadeia crm-transferir-jundiai para girar a roleta e mover o card.' },
+    ],
+    notes: [
+      'Verifica o campo qualifica_IA (6432) = sim.',
+      'Card em 73693 com consultor humano é ignorado.',
+      'Garante que o lead qualificado não fica preso na conversa com o bot.',
+    ],
+  },
+  {
+    id: 'handoff-130min',
+    num: '6',
+    name: 'Handoff 130min Jundiaí',
+    short: 'Encaminha leads parados há 130 min em "IA atendendo" para a fila do time.',
+    workflowId: 'Uzpqt0FHQMZIUqin',
+    trigger: 'Cron a cada 5 min',
+    flow: [
+      { label: 'Listar Funil', desc: 'Pagina o funil 7175 (limit=200, teto de páginas) para encontrar candidatos.' },
+      { label: 'Filtrar 130min IA', desc: 'Seleciona quem está há 130 min ou mais em 73692, com o tempo rastreado em staticData.' },
+      { label: 'Fila próximo vendedor', desc: 'Gira a roleta (proximo_vendedor "jundiai") para pegar o consultor — a menos que o lead já tenha um vendedor humano.' },
+      { label: 'CRM + Supabase', desc: 'Move o card para 73693, registra a transferência e encerra a sessão do agente.' },
+    ],
+    notes: [
+      'Rastreia o tempo via staticData (não UpdatedAt).',
+      'Respeita vendedor humano já atribuído — não gira a fila de novo.',
+      'Não depende de WhatsApp conectado (não checa o agente).',
+    ],
+  },
+  {
+    id: 'monitor-leads',
+    num: '7',
+    name: 'Monitor leads parado Jundiaí',
+    short: 'Detecta leads parados no funil 7175 e alerta o time de operação.',
+    workflowId: 'atxSjHbxusO44HmU',
+    trigger: 'Cron a cada 10 min',
+    flow: [
+      { label: 'Listar / Classificar', desc: 'Classifica leads parados (Novo ≥ 60 min, IA atendendo ≥ 150 min, Qualificado IA sem vendedor ≥ 45 min).' },
+      { label: 'Alertar', desc: 'Publica no hub de alertas Long Life com unidade=jundiai.' },
+    ],
+    notes: [
+      'Publica em /webhook/longlife-ops-alert com unidade=jundiai.',
+      'Mesmo hub da Bragança (Alerta_Ops_LongLife).',
+    ],
+  },
 ]
