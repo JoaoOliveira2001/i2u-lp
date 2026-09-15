@@ -8,6 +8,7 @@
     { "source": "/investimento-midia", "destination": "/investimento-midia.html" },
     { "source": "/poc-restaurante", "destination": "/poc-restaurante.html" },
     { "source": "/cliente/:slug", "destination": "/cliente.html" },
-    { "source": "/docs/longlife", "destination": "/docs/longlife.html" }
+    { "source": "/docs/longlife", "destination": "/docs/longlife.html" },
+    { "source": "/filas", "destination": "/filas.html" }
   ]
 }

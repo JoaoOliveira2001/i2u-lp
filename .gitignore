@@ -32,3 +32,11 @@ Thumbs.db
 .env.production
 .env.vercel.production
 .vercel
+
+# AI harness (impeccable skills/agents instalados localmente)
+.agents/
+.claude/
+.codex/
+.cursor/
+.hermes/
+.opencode/
