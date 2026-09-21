@@ -20,6 +20,7 @@ function getDeveloperPasswords() {
     leandro: import.meta.env.VITE_HORAS_PASSWORD_LEANDRO,
     joao: import.meta.env.VITE_HORAS_PASSWORD_JOAO,
     pedro: import.meta.env.VITE_HORAS_PASSWORD_PEDRO,
+    luiz: import.meta.env.VITE_HORAS_PASSWORD_LUIZ,
   }
 }
 

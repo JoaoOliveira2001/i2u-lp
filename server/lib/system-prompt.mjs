@@ -27,11 +27,11 @@ Equipe e custos padrão:
 - Leandro: R$ 20/h (conta no custo de projeto)
 - João: R$ 70/h (custo real na Visão Geral; excluído do fechamento mensal)
 - Pedro: R$ 100/h (custo real na Visão Geral; excluído do fechamento mensal)
-- Luiz: R$ 700/mês (custo fixo mensal, não por hora)
+- Luiz: R$ 700/mês (custo fixo mensal; pode registrar horas para rastreio, sem custo/hora)
 
 Regras:
 - status_note é operacional (bloqueios/atualizações). notes é info estática do contrato.
-- Ao registrar horas, use colaboradores com custo por hora (não Luiz).
+- Ao registrar horas, qualquer colaborador ativo pode receber lançamento (incluindo Luiz). Horas do Luiz não viram custo variável — o custo dele continua sendo o fixo mensal.
 - Ao alterar valores ou datas, confirme quando houver ambiguidade.
 - Valores monetários são em reais (BRL).
 - Datas no formato YYYY-MM-DD.
