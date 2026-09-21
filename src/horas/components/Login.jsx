@@ -24,9 +24,9 @@ export function Login({ onSuccess }) {
         return
       }
 
-      const hourly = (data || []).filter((d) => d.cost_model !== 'fixed_monthly')
-      setDevelopers(hourly)
-      if (hourly.length) setDeveloperId(hourly[0].id)
+      const active = data || []
+      setDevelopers(active)
+      if (active.length) setDeveloperId(active[0].id)
       setLoadingDevs(false)
     }
 

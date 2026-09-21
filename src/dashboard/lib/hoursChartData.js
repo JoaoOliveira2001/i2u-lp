@@ -1,10 +1,8 @@
 import { formatMonthLabel } from './monthlyStats'
 
 export function buildDeveloperHoursSeries(timeEntries, developers) {
-  const hourlyDevs = developers.filter(
-    (d) => d.active !== false && d.cost_model !== 'fixed_monthly',
-  )
-  const series = hourlyDevs.map((d) => d.name)
+  const activeDevs = developers.filter((d) => d.active !== false)
+  const series = activeDevs.map((d) => d.name)
 
   const months = new Map()
 

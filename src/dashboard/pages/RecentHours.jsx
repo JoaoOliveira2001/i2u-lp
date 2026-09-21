@@ -17,7 +17,7 @@ export function RecentHours({ timeEntries, developers, onSelectProject }) {
   const [developerId, setDeveloperId] = useState('all')
 
   const activeDevs = useMemo(
-    () => developers.filter((d) => d.active !== false && d.cost_model !== 'fixed_monthly'),
+    () => developers.filter((d) => d.active !== false),
     [developers],
   )
 

@@ -39,9 +39,7 @@ export function useTimesheetData(developerId) {
       throw new Error(devsRes.error?.message || projectsRes.error?.message)
     }
 
-    setDevelopers(
-      (devsRes.data || []).filter((d) => d.cost_model !== 'fixed_monthly'),
-    )
+    setDevelopers(devsRes.data || [])
     setProjects(projectsRes.data || [])
   }, [])
 

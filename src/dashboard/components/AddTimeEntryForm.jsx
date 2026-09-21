@@ -12,8 +12,8 @@ function parseHoursInput(value) {
 }
 
 export function AddTimeEntryForm({ projectId, developers, onSaved }) {
-  const hourlyDevs = developers.filter((d) => d.cost_model !== 'fixed_monthly' && d.active !== false)
-  const [developerId, setDeveloperId] = useState(hourlyDevs[0]?.id || '')
+  const activeDevs = developers.filter((d) => d.active !== false)
+  const [developerId, setDeveloperId] = useState(activeDevs[0]?.id || '')
   const [workDate, setWorkDate] = useState('')
   const [hours, setHours] = useState('')
   const [task, setTask] = useState('')
@@ -48,8 +48,8 @@ export function AddTimeEntryForm({ projectId, developers, onSaved }) {
     }
   }
 
-  if (!hourlyDevs.length) {
-    return <p className="loading">Cadastre um colaborador por hora para registrar horas.</p>
+  if (!activeDevs.length) {
+    return <p className="loading">Cadastre um colaborador ativo para registrar horas.</p>
   }
 
   return (
@@ -63,7 +63,7 @@ export function AddTimeEntryForm({ projectId, developers, onSaved }) {
           value={developerId}
           onChange={(e) => setDeveloperId(e.target.value)}
         >
-          {hourlyDevs.map((dev) => (
+          {activeDevs.map((dev) => (
             <option key={dev.id} value={dev.id}>
               {dev.name}
             </option>
