@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { ensureLonglifeHoursProjects } from '../../lib/longlifeHoursProjects'
 import { supabase } from '../../lib/supabase'
 import {
   buildMonthlyStats,
@@ -16,6 +17,12 @@ export function useProfitability() {
   const load = useCallback(async () => {
     setLoading(true)
     setError(null)
+
+    try {
+      await ensureLonglifeHoursProjects(supabase)
+    } catch (err) {
+      console.warn('[dashboard] espelho Linear Longlife indisponível', err)
+    }
 
     const [projectsRes, devsRes, entriesRes] = await Promise.all([
       supabase.from('project_profitability').select('*').order('name'),

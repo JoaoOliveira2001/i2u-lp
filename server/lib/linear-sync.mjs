@@ -1,3 +1,4 @@
+import { ensureLonglifeHoursProjects } from '../../src/lib/longlifeHoursProjects.js'
 import { fetchAllProjects, fetchProjectIssues } from './linear-client.mjs'
 import { slugify } from './slugify.mjs'
 
@@ -145,6 +146,25 @@ async function findProjectBySlug(supabase, name, excludeProjectId) {
   return pickBestProjectMatch(matches)
 }
 
+async function findProjectByLinearUrl(supabase, url) {
+  const normalized = String(url || '').trim()
+  if (!normalized) return null
+
+  const { data: projects } = await supabase
+    .from('projects')
+    .select('id, slug, name, linear_project_id, linear_url, contract_value_brl, created_at')
+
+  return (
+    (projects || []).find(
+      (project) =>
+        String(project.linear_url || '')
+          .trim()
+          .replace(/\/$/, '')
+          .toLowerCase() === normalized.replace(/\/$/, '').toLowerCase(),
+    ) || null
+  )
+}
+
 async function findExistingProjectForLinear(supabase, linearProject) {
   const { data: byLinearId } = await supabase
     .from('projects')
@@ -153,6 +173,11 @@ async function findExistingProjectForLinear(supabase, linearProject) {
     .maybeSingle()
 
   if (byLinearId) return byLinearId
+
+  const byUrl = await findProjectByLinearUrl(supabase, linearProject.url)
+  if (byUrl && (!byUrl.linear_project_id || byUrl.linear_project_id === linearProject.id)) {
+    return byUrl
+  }
 
   const name = linearProject.name?.trim()
   const byName = await findProjectByNormalizedName(supabase, name)
@@ -280,6 +305,19 @@ export async function syncProjectIssues(supabase, linearProjectId) {
 }
 
 export async function syncAllFromLinear(supabase) {
+  const ensured = await ensureLonglifeHoursProjects(supabase)
+
+  if (!process.env.LINEAR_API_KEY) {
+    return {
+      source: 'longlife-catalog',
+      projects: ensured.inserted,
+      updated: ensured.updated,
+      issues: 0,
+      note:
+        'LINEAR_API_KEY ausente. Catálogo Longlife aplicado. Defina a chave do workspace Longlife para puxar projetos novos direto do Linear.',
+    }
+  }
+
   const projects = await fetchAllProjects()
   let issueCount = 0
 
@@ -293,7 +331,7 @@ export async function syncAllFromLinear(supabase) {
     issueCount += synced.count
   }
 
-  return { projects: projects.length, issues: issueCount }
+  return { source: 'linear', projects: projects.length, issues: issueCount, ensured }
 }
 
 export async function handleLinearWebhook(supabase, payload) {

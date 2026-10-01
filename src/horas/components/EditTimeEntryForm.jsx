@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { withEntryProject } from '../../lib/longlifeHoursProjects'
 import { updateTimeEntry } from '../../lib/mutations'
 
 const QUICK_HOURS = ['0:30', '1', '1:30', '2', '4', '8']
@@ -62,6 +63,8 @@ export function EditTimeEntryForm({ entry, projects, onSaved, onCancel }) {
     }
   }
 
+  const options = withEntryProject(projects, entry)
+
   return (
     <form className="entry-edit" onSubmit={handleSubmit}>
       {error && <div className="error-banner">{error}</div>}
@@ -69,7 +72,7 @@ export function EditTimeEntryForm({ entry, projects, onSaved, onCancel }) {
       <div className="field">
         <label>Projeto</label>
         <select value={projectId} onChange={(e) => setProjectId(e.target.value)}>
-          {projects.map((project) => (
+          {options.map((project) => (
             <option key={project.id} value={project.id}>
               {project.name}
             </option>

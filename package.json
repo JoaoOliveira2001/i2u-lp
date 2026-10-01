@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "linear:seed-users": "node scripts/seed-linear-users.mjs",
     "linear:setup-webhook": "node scripts/setup-linear-webhook.mjs",
-    "linear:setup-longlife": "node scripts/setup-linear-longlife.mjs"
+    "linear:setup-longlife": "node scripts/setup-linear-longlife.mjs",
+    "linear:sync": "node scripts/sync-linear.mjs",
+    "linear:ensure-hours-projects": "node scripts/ensure-longlife-hours-projects.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.71",
