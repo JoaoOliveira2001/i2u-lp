@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { ensureLonglifeHoursProjects, isSelectableHoursProject } from '../../lib/longlifeHoursProjects'
 import { supabase } from '../../lib/supabase'
 
 function startOfWeek(date) {
@@ -22,6 +23,12 @@ export function useTimesheetData(developerId) {
   const [error, setError] = useState(null)
 
   const loadBase = useCallback(async () => {
+    try {
+      await ensureLonglifeHoursProjects(supabase)
+    } catch (err) {
+      console.warn('[horas] espelho Linear Longlife indisponível', err)
+    }
+
     const [devsRes, projectsRes] = await Promise.all([
       supabase
         .from('developers')
@@ -30,8 +37,9 @@ export function useTimesheetData(developerId) {
         .order('name'),
       supabase
         .from('projects')
-        .select('id, name, slug, status')
+        .select('id, name, slug, status, linear_url, linear_archived_at')
         .neq('status', 'finalized')
+        .is('linear_archived_at', null)
         .order('name'),
     ])
 
@@ -40,7 +48,7 @@ export function useTimesheetData(developerId) {
     }
 
     setDevelopers(devsRes.data || [])
-    setProjects(projectsRes.data || [])
+    setProjects((projectsRes.data || []).filter(isSelectableHoursProject))
   }, [])
 
   const loadEntries = useCallback(async () => {
