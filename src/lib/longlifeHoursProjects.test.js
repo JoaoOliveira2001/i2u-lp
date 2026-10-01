@@ -15,7 +15,7 @@ test('catalog includes Linear Longlife projects and the requested hours projects
   assert.deepEqual(names, [
     'Longlife',
     'SM2 — Integrações',
-    'Califórnia',
+    'California',
     'Pedacinho do Céu',
     'HFIT',
   ])
@@ -136,7 +136,6 @@ test('reopens finalized California on the same row and adds Pedacinho and HFIT',
   ])
 
   assert.deepEqual(plan.updates.find((row) => row.id === CALIFORNIA_ID).patch, {
-    name: 'Califórnia',
     status: 'active',
   })
   assert.equal(plan.inserts.some((row) => row.slug === 'california'), false)
@@ -144,6 +143,24 @@ test('reopens finalized California on the same row and adds Pedacinho and HFIT',
   assert.equal(plan.inserts.find((row) => row.slug === 'pedacinho-do-ceu').linear_url, undefined)
   assert.equal(plan.inserts.find((row) => row.slug === 'hfit').name, 'HFIT')
   assert.equal(plan.inserts.find((row) => row.slug === 'hfit').linear_url, undefined)
+})
+
+test('uses the Linear SM2 name California when the stored label is accented', () => {
+  const plan = planLonglifeProjectWrites([
+    {
+      id: CALIFORNIA_ID,
+      slug: 'california',
+      name: 'Califórnia',
+      status: 'active',
+      linear_url: 'https://linear.app/sm2/project/california-55fe6d028a04',
+      linear_project_id: '513e62cf-7543-455f-b07a-fe4be8685522',
+    },
+  ])
+
+  assert.equal(plan.inserts.some((row) => row.slug === 'california'), false)
+  assert.deepEqual(plan.updates.find((row) => row.id === CALIFORNIA_ID).patch, {
+    name: 'California',
+  })
 })
 
 test('matches accent-insensitive and lowercase names without creating a second row', () => {

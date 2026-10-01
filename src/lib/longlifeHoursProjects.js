@@ -39,9 +39,10 @@ export const LONGLIFE_HOURS_PROJECTS = [
   },
   {
     slug: 'california',
-    name: 'Califórnia',
+    name: 'California',
     linearUrl: 'https://linear.app/sm2/project/california-55fe6d028a04',
-    linearKey: null,
+    linearKey: 'P-SM2-1',
+    workspace: 'SM2',
     linearStatus: null,
   },
   {
@@ -77,8 +78,11 @@ function normalizeName(value) {
 }
 
 function mirrorNote(item) {
-  if (item.linearKey && item.linearStatus) {
-    return `Projeto Linear Longlife (${item.linearKey}, ${item.linearStatus}).`
+  if (item.linearKey) {
+    const workspace =
+      item.workspace || (String(item.linearKey).startsWith('P-SM2') ? 'SM2' : 'Longlife')
+    const status = item.linearStatus ? `, ${item.linearStatus}` : ''
+    return `Projeto Linear ${workspace} (${item.linearKey}${status}).`
   }
   if (item.linearUrl) {
     return 'Projeto vinculado ao Linear. Disponível para lançamento de horas.'

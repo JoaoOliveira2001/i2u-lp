@@ -1,6 +1,6 @@
--- Make Califórnia, Pedacinho do Céu, and HFIT selectable in /horas.
+-- Make California, Pedacinho do Céu, and HFIT selectable in /horas.
 --
--- Califórnia already exists as slug california (Linear SM2 project
+-- California already exists as slug california (Linear SM2 project P-SM2-1,
 -- https://linear.app/sm2/project/california-55fe6d028a04) but status
 -- finalized hid it from the dropdown. Reopen that same row.
 -- Pedacinho do Céu and HFIT were not in Linear's synced projects or in
@@ -14,7 +14,7 @@ insert into public.projects (slug, name, status, linear_url, notes)
 values
   (
     'california',
-    'Califórnia',
+    'California',
     'active',
     'https://linear.app/sm2/project/california-55fe6d028a04',
     'Projeto vinculado ao Linear. Disponível para lançamento de horas.'
