@@ -11,9 +11,13 @@
  *    `npm run linear:sync` (or POST /api/linear/sync, or the Project webhook).
  *    That upserts every current Linear project into `public.projects`.
  * 2. If that key is not available: add the project to LONGLIFE_HOURS_PROJECTS
- *    (stable slug, Linear name, Linear URL) and run
+ *    (stable slug, name people should see, Linear URL when one exists) and run
  *    `npm run linear:ensure-hours-projects`. Opening `/horas` or the dashboard
- *    also upserts any catalog row that is still missing.
+ *    also upserts any catalog row that is still missing and reopens a catalog
+ *    project that was marked finalized.
+ *
+ * Projects with no Linear URL are still selectable so the team can log hours.
+ * Fill `linearUrl` later, or run `npm run linear:sync`, to pair them.
  *
  * Never reuse a slug that already has time entries.
  */
@@ -32,6 +36,27 @@ export const LONGLIFE_HOURS_PROJECTS = [
     linearUrl: 'https://linear.app/longlife/project/sm2-integracoes-af25d4453cd5',
     linearKey: 'P-LON-2',
     linearStatus: 'In Progress',
+  },
+  {
+    slug: 'california',
+    name: 'Califórnia',
+    linearUrl: 'https://linear.app/sm2/project/california-55fe6d028a04',
+    linearKey: null,
+    linearStatus: null,
+  },
+  {
+    slug: 'pedacinho-do-ceu',
+    name: 'Pedacinho do Céu',
+    linearUrl: null,
+    linearKey: null,
+    linearStatus: null,
+  },
+  {
+    slug: 'hfit',
+    name: 'HFIT',
+    linearUrl: null,
+    linearKey: null,
+    linearStatus: null,
   },
 ]
 
@@ -52,7 +77,33 @@ function normalizeName(value) {
 }
 
 function mirrorNote(item) {
-  return `Projeto Linear Longlife (${item.linearKey}, ${item.linearStatus}).`
+  if (item.linearKey && item.linearStatus) {
+    return `Projeto Linear Longlife (${item.linearKey}, ${item.linearStatus}).`
+  }
+  if (item.linearUrl) {
+    return 'Projeto vinculado ao Linear. Disponível para lançamento de horas.'
+  }
+  return 'Disponível para lançamento de horas. Sem projeto correspondente no Linear ainda.'
+}
+
+function catalogInsert(item) {
+  const row = {
+    slug: item.slug,
+    name: item.name,
+    status: 'active',
+    notes: mirrorNote(item),
+  }
+  if (item.linearUrl) row.linear_url = item.linearUrl
+  return row
+}
+
+function catalogPatch(existing, item) {
+  const patch = {}
+  if (item.linearUrl && !existing.linear_url) patch.linear_url = item.linearUrl
+  if (item.name && existing.name !== item.name) patch.name = item.name
+  if (existing.status !== 'active') patch.status = 'active'
+  if (existing.linear_archived_at) patch.linear_archived_at = null
+  return patch
 }
 
 export function planLonglifeProjectWrites(existingProjects, catalog = LONGLIFE_HOURS_PROJECTS) {
@@ -60,9 +111,11 @@ export function planLonglifeProjectWrites(existingProjects, catalog = LONGLIFE_H
   const updates = []
 
   for (const item of catalog) {
-    const byUrl = (existingProjects || []).find(
-      (project) => normalizeUrl(project.linear_url) === normalizeUrl(item.linearUrl),
-    )
+    const byUrl = item.linearUrl
+      ? (existingProjects || []).find(
+          (project) => normalizeUrl(project.linear_url) === normalizeUrl(item.linearUrl),
+        )
+      : null
     const bySlug = (existingProjects || []).find((project) => project.slug === item.slug)
     const byName = (existingProjects || []).find(
       (project) => normalizeName(project.name) === normalizeName(item.name),
@@ -78,21 +131,13 @@ export function planLonglifeProjectWrites(existingProjects, catalog = LONGLIFE_H
     }
 
     if (!existing) {
-      inserts.push({
-        slug: item.slug,
-        name: item.name,
-        status: 'active',
-        linear_url: item.linearUrl,
-        notes: mirrorNote(item),
-      })
+      inserts.push(catalogInsert(item))
       continue
     }
 
-    if (!existing.linear_url) {
-      updates.push({
-        id: existing.id,
-        patch: { linear_url: item.linearUrl },
-      })
+    const patch = catalogPatch(existing, item)
+    if (Object.keys(patch).length) {
+      updates.push({ id: existing.id, patch })
     }
   }
 
@@ -120,7 +165,7 @@ export function withEntryProject(projects, entry) {
 export async function ensureLonglifeHoursProjects(supabase, catalog = LONGLIFE_HOURS_PROJECTS) {
   const { data, error } = await supabase
     .from('projects')
-    .select('id, slug, name, linear_url, status, linear_project_id')
+    .select('id, slug, name, linear_url, status, linear_project_id, linear_archived_at')
 
   if (error) throw new Error(error.message || 'Falha ao ler projetos')
 

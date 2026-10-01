@@ -10,17 +10,24 @@ import {
 const LONGLIFE_ID = 'c78b8eb7-17fd-4517-bb38-ece3a7a1deb8'
 const KRINGE_ID = '27f8dce7-815d-49ef-b9d3-66d7b38e3133'
 
-test('catalog includes the current Linear Longlife projects', () => {
+test('catalog includes Linear Longlife projects and the requested hours projects', () => {
   const names = LONGLIFE_HOURS_PROJECTS.map((project) => project.name)
-  assert.deepEqual(names, ['Longlife', 'SM2 — Integrações'])
+  assert.deepEqual(names, [
+    'Longlife',
+    'SM2 — Integrações',
+    'Califórnia',
+    'Pedacinho do Céu',
+    'HFIT',
+  ])
   assert.equal(
-    LONGLIFE_HOURS_PROJECTS[0].linearUrl,
-    'https://linear.app/longlife/project/longlife-8fdb5a8d09aa',
+    LONGLIFE_HOURS_PROJECTS.find((project) => project.slug === 'california').linearUrl,
+    'https://linear.app/sm2/project/california-55fe6d028a04',
   )
   assert.equal(
-    LONGLIFE_HOURS_PROJECTS[1].linearUrl,
-    'https://linear.app/longlife/project/sm2-integracoes-af25d4453cd5',
+    LONGLIFE_HOURS_PROJECTS.find((project) => project.slug === 'pedacinho-do-ceu').linearUrl,
+    null,
   )
+  assert.equal(LONGLIFE_HOURS_PROJECTS.find((project) => project.slug === 'hfit').linearUrl, null)
 })
 
 test('plans an insert for SM2 and leaves the existing Longlife row untouched', () => {
@@ -44,13 +51,15 @@ test('plans an insert for SM2 and leaves the existing Longlife row untouched', (
   ]
 
   const plan = planLonglifeProjectWrites(existing)
+  const sm2 = plan.inserts.find((row) => row.slug === 'sm2-integracoes')
 
-  assert.equal(plan.updates.length, 0)
-  assert.equal(plan.inserts.length, 1)
-  assert.equal(plan.inserts[0].slug, 'sm2-integracoes')
-  assert.equal(plan.inserts[0].name, 'SM2 — Integrações')
-  assert.equal(plan.inserts[0].status, 'active')
-  assert.equal(plan.inserts[0].id, undefined)
+  assert.equal(
+    plan.updates.some((row) => row.id === LONGLIFE_ID),
+    false,
+  )
+  assert.equal(sm2.name, 'SM2 — Integrações')
+  assert.equal(sm2.status, 'active')
+  assert.equal(sm2.id, undefined)
   assert.equal(
     existing.find((project) => project.slug === 'longlife').id,
     LONGLIFE_ID,
@@ -58,7 +67,7 @@ test('plans an insert for SM2 and leaves the existing Longlife row untouched', (
   assert.equal(existing.find((project) => project.slug === 'kringe').id, KRINGE_ID)
 })
 
-test('fills a missing Linear URL without renaming or reopening a project', () => {
+test('fills a missing Linear URL and reopens a catalog project for hour logging', () => {
   const plan = planLonglifeProjectWrites([
     {
       id: LONGLIFE_ID,
@@ -69,14 +78,14 @@ test('fills a missing Linear URL without renaming or reopening a project', () =>
     },
   ])
 
-  assert.equal(plan.inserts.length, 1)
-  assert.equal(plan.inserts[0].slug, 'sm2-integracoes')
-  assert.deepEqual(plan.updates, [
-    {
-      id: LONGLIFE_ID,
-      patch: { linear_url: 'https://linear.app/longlife/project/longlife-8fdb5a8d09aa' },
-    },
-  ])
+  assert.equal(
+    plan.updates.find((row) => row.id === LONGLIFE_ID).patch.name,
+    undefined,
+  )
+  assert.deepEqual(plan.updates.find((row) => row.id === LONGLIFE_ID).patch, {
+    linear_url: 'https://linear.app/longlife/project/longlife-8fdb5a8d09aa',
+    status: 'active',
+  })
 })
 
 test('does not duplicate a project that already matches by name', () => {
@@ -109,6 +118,61 @@ test('hours selector keeps active projects and drops finalized or Linear-archive
     isSelectableHoursProject({ status: 'active', linear_archived_at: '2026-08-01T00:00:00Z' }),
     false,
   )
+})
+
+const CALIFORNIA_ID = 'b5fd716a-f39b-4d5f-a0e0-8c369039bc6f'
+
+test('reopens finalized California on the same row and adds Pedacinho and HFIT', () => {
+  const plan = planLonglifeProjectWrites([
+    {
+      id: CALIFORNIA_ID,
+      slug: 'california',
+      name: 'California',
+      status: 'finalized',
+      linear_url: 'https://linear.app/sm2/project/california-55fe6d028a04',
+      linear_project_id: '513e62cf-7543-455f-b07a-fe4be8685522',
+      linear_archived_at: null,
+    },
+  ])
+
+  assert.deepEqual(plan.updates.find((row) => row.id === CALIFORNIA_ID).patch, {
+    name: 'Califórnia',
+    status: 'active',
+  })
+  assert.equal(plan.inserts.some((row) => row.slug === 'california'), false)
+  assert.equal(plan.inserts.find((row) => row.slug === 'pedacinho-do-ceu').name, 'Pedacinho do Céu')
+  assert.equal(plan.inserts.find((row) => row.slug === 'pedacinho-do-ceu').linear_url, undefined)
+  assert.equal(plan.inserts.find((row) => row.slug === 'hfit').name, 'HFIT')
+  assert.equal(plan.inserts.find((row) => row.slug === 'hfit').linear_url, undefined)
+})
+
+test('matches accent-insensitive and lowercase names without creating a second row', () => {
+  const plan = planLonglifeProjectWrites([
+    {
+      id: 'pedacinho-row',
+      slug: 'pedacinho',
+      name: 'PEDACINHO DO CEU',
+      status: 'finalized',
+      linear_url: null,
+    },
+    {
+      id: 'hfit-row',
+      slug: 'h-fit',
+      name: 'hfit',
+      status: 'active',
+      linear_url: null,
+    },
+  ])
+
+  assert.equal(plan.inserts.some((row) => row.slug === 'pedacinho-do-ceu'), false)
+  assert.equal(plan.inserts.some((row) => row.slug === 'hfit'), false)
+  assert.deepEqual(plan.updates.find((row) => row.id === 'pedacinho-row').patch, {
+    name: 'Pedacinho do Céu',
+    status: 'active',
+  })
+  assert.deepEqual(plan.updates.find((row) => row.id === 'hfit-row').patch, {
+    name: 'HFIT',
+  })
 })
 
 test('editing an old entry keeps its project even when it is not in the selector', () => {
