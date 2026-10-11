@@ -3,7 +3,6 @@ import { useState } from 'react'
 export const LONGLIFE_NAV = [
   { href: '/cliente/longlife', id: 'inicio', label: 'Início' },
   { href: '/investimento-midia', id: 'investimento', label: 'Investimento' },
-  { href: '/filas', id: 'filas', label: 'Filas' },
   { href: '/docs/longlife', id: 'docs', label: 'Documentação' },
 ]
 
