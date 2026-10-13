@@ -152,8 +152,9 @@ export const infra = [
   { resource: 'CRM (API Lumion)', value: 'integracao.agendasistemacrm.com.br/api/v1' },
   { resource: 'n8n', value: 'n8n.unificahub.com.br' },
   { resource: 'Supabase', value: 'jlyqptmxcloouaxumdqu.supabase.co' },
-  { resource: 'Fila de vendedores', value: 'RPC proximo_vendedor(p_unidade) · tabela vendedores_fila' },
-  { resource: 'Agente de IA', value: 'Bragança 17530 (Amil_Braganca_Bot) · Jundiaí 16306 (Agente SDR Jundiaí)' },
+  { resource: 'Fila de vendedores', value: 'RPCs proximo_vendedor · adicionar_vendedor · remover_vendedor · tabela vendedores_fila' },
+  { resource: 'Portal de filas', value: 'longlife-portal (login por unidade)' },
+  { resource: 'Agente de IA', value: 'Bragança 17530 (Amil_Braganca_Bot) · Jundiaí 16306 (Agente SDR Jundiaí) · Sorocaba 22502 (SDR Sorocaba / SORBot)' },
   { resource: 'Conexão WhatsApp', value: 'dinâmica (LON-23): Bragança 27059 · Jundiaí 26926' },
 ]
 
@@ -328,4 +329,128 @@ export const automationsJundiai = [
       'Mesmo hub da Bragança (Alerta_Ops_LongLife).',
     ],
   },
+]
+
+// ---------------------------------------------------------------------------
+// Sorocaba (funil 12285) — clonada da Jundiaí, CRM com conta própria.
+// ---------------------------------------------------------------------------
+
+export const stagesSorocaba = [
+  { id: '86982', name: 'Novo', role: 'Entrada RD / LP' },
+  { id: '86983', name: 'IA atendendo', role: 'Agente SDR 22502 (SORBot) conversando' },
+  { id: '86984', name: 'Qualificado pela IA', role: 'Fila de trabalho do time' },
+  { id: '86989', name: 'Declinado', role: 'Descarte (opt-out / número errado)' },
+  { id: '86990', name: 'Fechado', role: '—' },
+]
+
+export const automationsSorocaba = [
+  {
+    id: 'captacao',
+    num: '1',
+    name: 'Captação Sorocaba',
+    short: 'Recebe a conversão da LP (ex.: sorocaba-amil-bronze) via RD Station e cria o lead em "Novo" (funil 12285).',
+    workflowId: 'NvB2P2VHRE1ppnPe',
+    trigger: 'Webhook POST /webhook/rd-station-sorocaba',
+    flow: [
+      { label: 'Webhook RD', desc: 'Recebe o POST da RD Station a cada conversão da LP de Sorocaba.' },
+      { label: 'Normalizar', desc: 'Valida telefone (DDD + 9), nome, vidas e tipo de plano.' },
+      { label: 'Criar negociação', desc: 'Cria a negociação no funil 12285 na coluna "Novo" (86982), sem atribuir vendedor.' },
+      { label: 'Registrar no Supabase', desc: 'Insere a linha em chat_sessions para rastreio.' },
+      { label: 'Responder ao RD', desc: 'Devolve ao RD um resumo (recebidos, criados, ignorados).' },
+    ],
+  },
+  {
+    id: 'trilha',
+    num: '2',
+    name: 'Trilha Sorocaba',
+    short: 'Orquestrador: aborda leads em "Novo", dispara o agente SDR 22502 e cuida da transferência.',
+    workflowId: 'qqOLAVUf2tBCPOdi',
+    trigger: 'Cron 1 min + Cron 10 min + Webhook crm-transferir-sorocaba',
+    flow: [
+      { label: 'Cron 1min → aborda "Novo"', desc: 'Busca negociações em "Novo" com travas anti-spam, anti-clone e LGPD.' },
+      { label: 'Inicia agente IA', desc: 'Chama o agente SDR 22502 (SORBot) para iniciar o atendimento no WhatsApp do lead.' },
+      { label: 'Move para IA atendendo', desc: 'Move o card para 86983 após o disparo aceito.' },
+      { label: 'Cron 10min → transfere por silêncio', desc: 'Transfere quem não respondeu em 210 min, girando a roleta da unidade.' },
+    ],
+  },
+  {
+    id: 'transferir',
+    num: '3',
+    name: 'Transferir Sorocaba',
+    short: 'Transfere o lead para consultor humano girando a roleta proximo_vendedor("sorocaba").',
+    workflowId: 's6uz7ahg5eWyZ7bc',
+    trigger: 'Webhook POST /webhook/crm-transferir-sorocaba',
+    flow: [
+      { label: 'Validar', desc: 'Interpreta o motivo e normaliza telefone; localiza o card atual pelo telefone.' },
+      { label: 'Fila próximo vendedor', desc: 'Chama a RPC proximo_vendedor(p_unidade="sorocaba").' },
+      { label: 'Atribuir/mover', desc: 'Atribui o consultor e move para 86984. opt_out e numero_errado vão para Declinado (86989) sem gastar a roleta.' },
+      { label: 'Registrar e encerrar', desc: 'Grava no chat_sessions e encerra a sessão do agente.' },
+    ],
+  },
+  {
+    id: 'qualificado',
+    num: '4',
+    name: 'Qualificado Sorocaba',
+    short: 'Grava a qualificação do agente e encadeia a transferência.',
+    workflowId: 'NaEtvH3cldJtsEAy',
+    trigger: 'Webhook POST /webhook/crm-qualificacao-sorocaba',
+    flow: [
+      { label: 'Validar / resolver id', desc: 'Normaliza os dados e localiza o card correto no CRM.' },
+      { label: 'Gravar', desc: 'Atualiza chat_sessions, a negociação e os campos personalizados; marca qualifica_IA = sim.' },
+      { label: 'Encadear transferência', desc: 'Chama crm-transferir-sorocaba (motivo qualificado).' },
+    ],
+  },
+  {
+    id: 'qualifica-ia',
+    num: '5',
+    name: 'Qualifica IA Sorocaba',
+    short: 'Move para "Qualificado pela IA" os leads com qualifica_IA = sim.',
+    workflowId: 'aQOGrKuUOJqE3X4m',
+    trigger: 'Cron a cada 1 min',
+    flow: [
+      { label: 'Listar / Filtrar', desc: 'Varre o funil 12285 e seleciona quem está em 86983 com qualifica_IA = sim.' },
+      { label: 'Mover', desc: 'Move o card para 86984.' },
+    ],
+  },
+  {
+    id: 'handoff-130min',
+    num: '6',
+    name: 'Handoff 130min Sorocaba',
+    short: 'Encaminha para a fila leads parados há 130 min ou mais em "IA atendendo".',
+    workflowId: 'lfmGCPcupH8CWwFi',
+    trigger: 'Cron a cada 5 min',
+    flow: [
+      { label: 'Filtrar 130min IA', desc: 'Seleciona quem está há 130 min ou mais em 86983.' },
+      { label: 'Fila próximo vendedor', desc: 'Gira a roleta — respeita vendedor humano já atribuído.' },
+      { label: 'CRM + Supabase', desc: 'Move para 86984, registra a transferência e encerra a sessão do agente.' },
+    ],
+  },
+  {
+    id: 'monitor-leads',
+    num: '7',
+    name: 'Monitor leads parado Sorocaba',
+    short: 'Detecta leads parados no funil 12285 e alerta o time de operação.',
+    workflowId: 'jIoWqb8xqAGEqo36',
+    trigger: 'Cron a cada 10 min',
+    flow: [
+      { label: 'Listar / Classificar', desc: 'Classifica leads parados por estágio.' },
+      { label: 'Alertar', desc: 'Publica no hub de alertas Long Life com unidade=sorocaba.' },
+    ],
+  },
+]
+
+export const unitStatus = [
+  { unit: 'Bragança', status: 'Em produção' },
+  { unit: 'Jundiaí', status: 'Em produção' },
+  { unit: 'Sorocaba', status: 'Migrada (LON-46) · go-live em revisão (LON-49)' },
+  { unit: 'Sumaré', status: 'Migração no backlog (LON-47)' },
+  { unit: 'LON-50', status: 'Backlog' },
+]
+
+export const changelog = [
+  'LON-46: migração da unidade Sorocaba (funil 12285, 7 workflows, fila com 5 atendentes, SORBot vinculado ao agente 22502, LP → RD → Captação → CRM → Trilha).',
+  'LON-51: Sorocaba entra no portal de filas.',
+  'LON-52: botões para inserir e retirar atendentes no portal.',
+  'Portal do cliente (/cliente/longlife): o item "Filas" saiu do menu (LonglifeNav.jsx, PR #14). A gestão das filas fica no longlife-portal.',
+  'Alertas de erro da API do n8n para o WhatsApp desligados.',
 ]
