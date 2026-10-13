@@ -1,11 +1,27 @@
 import { useState } from 'react'
-import { automations, automationsJundiai, infra } from '../docs-longlife/data'
+import {
+  automations,
+  automationsJundiai,
+  automationsSorocaba,
+  infra,
+  unitStatus,
+  changelog,
+} from '../docs-longlife/data'
 
 const N8N_BASE = 'https://n8n.unificahub.com.br'
 
 const UNITS = [
   { id: 'braganca', name: 'Bragança', funnel: 'Bragança · funil 6777', automations },
   { id: 'jundiai', name: 'Jundiaí', funnel: 'Jundiaí · funil 7175', automations: automationsJundiai },
+  {
+    id: 'sorocaba',
+    name: 'Sorocaba',
+    funnel: 'Sorocaba · funil 12285',
+    automations: automationsSorocaba,
+    note:
+      'O nó de sincronização com o Metabase está desativado nos workflows Captação, Trilha, Transferir, Qualificado e Handoff de Sorocaba. Por isso o dashboard ainda não mostra dados da unidade.',
+  },
+  { id: 'sumare', name: 'Sumaré', funnel: 'Sumaré · em migração', automations: [], state: 'Em migração' },
 ]
 
 function UnitNav({ unit, onChange }) {
@@ -21,7 +37,7 @@ function UnitNav({ unit, onChange }) {
             className={`nav__link ${unit === u.id ? 'is-active' : ''}`}
           >
             <span className="nav__name">{u.name}</span>
-            <span className="nav__state">Documentada</span>
+            <span className="nav__state">{u.state || 'Documentada'}</span>
           </a>
         ))}
       </div>
@@ -156,6 +172,12 @@ export function App() {
 
           <section className="block" id="automacoes">
             <h2 className="block__title">As automações</h2>
+            {active.note && <p className="block__text"><strong>Nota:</strong> {active.note}</p>}
+            {active.automations.length === 0 && (
+              <p className="block__text">
+                Migração da unidade no backlog (LON-47). As automações serão documentadas quando a unidade for migrada.
+              </p>
+            )}
             {active.automations.map((a, i) => (
               <Automation a={a} index={i} key={a.id} />
             ))}
@@ -166,8 +188,38 @@ export function App() {
             <p className="block__text">
               Cada chamada ao CRM é checada. Fora de 2xx ou body com erro, o hub
               <code>Alerta_Ops_LongLife</code> deduplica e publica um alerta em
-              cascata (Cursor → WhatsApp → Discord). A falha nunca interrompe o fluxo.
+              alerta (Cursor → Discord). Os alertas de erro da API do n8n para o
+              WhatsApp foram desligados. A falha nunca interrompe o fluxo.
             </p>
+          </section>
+
+          <section className="block" id="portal-filas">
+            <h2 className="block__title">Portal de filas (longlife-portal)</h2>
+            <p className="block__text">
+              Cada unidade tem um login próprio no portal de filas: Bragança, Jundiaí e, desde a
+              LON-51, Sorocaba (usuário <code>adminsorocaba</code>, senha guardada na variável de
+              ambiente da Vercel). Pelo portal, a gestora da unidade pode:
+            </p>
+            <ul className="block__text">
+              <li><strong>Ligar e desligar</strong> um atendente da roleta (ativo/inativo).</li>
+              <li><strong>Inserir atendente</strong> (LON-52): nome, id de usuário no CRM e peso. O atendente já entra na roleta.</li>
+              <li><strong>Retirar atendente</strong> (LON-52): o atendente sai da fila depois de uma confirmação. O histórico fica preservado, porque a linha é marcada como removida e não é apagada.</li>
+            </ul>
+            <p className="block__text">Cada login só vê e altera a fila da própria unidade.</p>
+          </section>
+
+          <section className="block" id="fila-vendedores">
+            <h2 className="block__title">Fila de vendedores (Supabase)</h2>
+            <p className="block__text">
+              Tabela <code>vendedores_fila</code> (projeto <code>jlyqptmxcloouaxumdqu</code>). Hoje:
+              Bragança 15, Jundiaí 15, Sorocaba 5 atendentes.
+            </p>
+            <ul className="block__text">
+              <li><code>proximo_vendedor(p_unidade)</code>: gira a roleta da unidade. Só o n8n chama.</li>
+              <li><code>adicionar_vendedor(p_unidade, p_id_usuario_crm, p_nome, p_peso, p_ativo)</code>: insere um atendente, ou reativa um que já tinha sido removido.</li>
+              <li><code>remover_vendedor(p_unidade, p_id_usuario_crm)</code>: marca <code>removido = true</code>.</li>
+              <li>Coluna <code>removido</code> (migration <code>20261009140000</code>). As views <code>v_fila_status</code> e <code>v_fila_proximo</code> não mostram os removidos.</li>
+            </ul>
           </section>
 
           <section className="block">
@@ -184,6 +236,29 @@ export function App() {
                 </tr>
               )}
             />
+          </section>
+
+          <section className="block" id="status-unidades">
+            <h2 className="block__title">Status das unidades</h2>
+            <Table
+              headers={['Unidade', 'Status']}
+              rows={unitStatus}
+              render={(r) => (
+                <tr key={r.unit}>
+                  <td>{r.unit}</td>
+                  <td>{r.status}</td>
+                </tr>
+              )}
+            />
+          </section>
+
+          <section className="block" id="historico">
+            <h2 className="block__title">Histórico de mudanças</h2>
+            <ul className="block__text">
+              {changelog.map((c, i) => (
+                <li key={i}>{c}</li>
+              ))}
+            </ul>
           </section>
         </main>
       </div>
