@@ -353,7 +353,10 @@ export const automationsSorocaba = [
     trigger: 'Webhook POST /webhook/rd-station-sorocaba',
     flow: [
       { label: 'Webhook RD', desc: 'Recebe o POST da RD Station a cada conversão da LP de Sorocaba.' },
-      { label: 'Normalizar', desc: 'Valida telefone (DDD + 9), nome, vidas e tipo de plano.' },
+      {
+        label: 'E1. Normalizar lead do RD',
+        desc: 'Valida telefone (DDD + 9), nome, vidas e tipo de plano. Define a fonte do CRM conferindo, nesta ordem, identificador, depois campanha, depois produto: "vale do paraiba" → 19771 Facebook Amil Vale do Paraiba; "amil" → 19399 Facebook Amil Sorocaba; "gndi" → 19401; "unimed" → 19778; "porto" → 19776; "eva" → 19772. Sem correspondência, usa 19399 e acrescenta os valores brutos em observacoes.',
+      },
       { label: 'Criar negociação', desc: 'Cria a negociação no funil 12285 na coluna "Novo" (86982), sem atribuir vendedor.' },
       { label: 'Registrar no Supabase', desc: 'Insere a linha em chat_sessions para rastreio.' },
       { label: 'Responder ao RD', desc: 'Devolve ao RD um resumo (recebidos, criados, ignorados).' },
@@ -448,6 +451,7 @@ export const unitStatus = [
 ]
 
 export const changelog = [
+  '14/10/2026 — Correção da fonte dos leads de Sorocaba: campanha "Sorocaba" caía em Não Informado (19403); agora o formulário define a fonte, e os cards afetados foram corrigidos.',
   'LON-46: migração da unidade Sorocaba (funil 12285, 7 workflows, fila com 5 atendentes, SORBot vinculado ao agente 22502, LP → RD → Captação → CRM → Trilha).',
   'LON-51: Sorocaba entra no portal de filas.',
   'LON-52: botões para inserir e retirar atendentes no portal.',
