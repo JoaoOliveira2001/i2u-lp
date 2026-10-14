@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { ensureLonglifeHoursProjects, isSelectableHoursProject } from '../../lib/longlifeHoursProjects'
 import { supabase } from '../../lib/supabase'
+import { currentMonthKey, monthRange } from '../lib/monthHours'
 
 function startOfWeek(date) {
   const d = new Date(date)
@@ -19,6 +20,11 @@ export function useTimesheetData(developerId) {
   const [developers, setDevelopers] = useState([])
   const [projects, setProjects] = useState([])
   const [entries, setEntries] = useState([])
+  const [monthKey, setMonthKey] = useState(currentMonthKey)
+  const [monthEntries, setMonthEntries] = useState([])
+  const [loadedMonthKey, setLoadedMonthKey] = useState('')
+  const [monthReloadKey, setMonthReloadKey] = useState(0)
+  const [monthError, setMonthError] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -89,6 +95,53 @@ export function useTimesheetData(developerId) {
     load()
   }, [load])
 
+  useEffect(() => {
+    if (!developerId) {
+      setMonthEntries([])
+      setLoadedMonthKey('')
+      setMonthError(null)
+      return
+    }
+
+    let cancelled = false
+    setMonthError(null)
+
+    const { start, end } = monthRange(monthKey)
+
+    supabase
+      .from('time_entries')
+      .select('id, project_id, work_date, hours_decimal, projects(name)')
+      .eq('developer_id', developerId)
+      .gte('work_date', start)
+      .lt('work_date', end)
+      .order('work_date', { ascending: true })
+      .then(({ data, error: entriesError }) => {
+        if (cancelled) return
+        if (entriesError) {
+          setMonthEntries([])
+          setMonthError(entriesError.message || 'Erro ao carregar o mês')
+        } else {
+          setMonthEntries(data || [])
+        }
+        setLoadedMonthKey(monthKey)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        setMonthEntries([])
+        setMonthError(err.message || 'Erro ao carregar o mês')
+        setLoadedMonthKey(monthKey)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [developerId, monthKey, monthReloadKey])
+
+  const refresh = useCallback(async () => {
+    await load()
+    setMonthReloadKey((value) => value + 1)
+  }, [load])
+
   const weekStart = formatDateKey(startOfWeek(new Date()))
   const weekHours = entries
     .filter((e) => e.work_date >= weekStart)
@@ -99,6 +152,8 @@ export function useTimesheetData(developerId) {
     .filter((e) => e.work_date === todayKey)
     .reduce((sum, e) => sum + Number(e.hours_decimal), 0)
 
+  const monthLoading = Boolean(developerId) && loadedMonthKey !== monthKey
+
   return {
     developers,
     projects,
@@ -107,6 +162,11 @@ export function useTimesheetData(developerId) {
     todayHours,
     loading,
     error,
-    refresh: load,
+    refresh,
+    monthKey,
+    setMonthKey,
+    monthEntries,
+    monthLoading,
+    monthError,
   }
 }

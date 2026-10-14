@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { formatHours } from '../lib/format'
 import { Login } from './components/Login'
+import { MonthDashboard } from './components/MonthDashboard'
 import { MyEntriesList } from './components/MyEntriesList'
 import { TimeEntryForm } from './components/TimeEntryForm'
 import { clearSessionDeveloperId, getSessionDeveloperId } from './lib/auth'
@@ -22,6 +23,11 @@ export default function App() {
     loading,
     error,
     refresh,
+    monthKey,
+    setMonthKey,
+    monthEntries,
+    monthLoading,
+    monthError,
   } = useTimesheetData(developerId)
 
   const selectedDev = developers.find((d) => d.id === developerId)
@@ -79,6 +85,14 @@ export default function App() {
               developerId={developerId}
               projects={projects}
               onSaved={refresh}
+            />
+
+            <MonthDashboard
+              monthKey={monthKey}
+              onMonthChange={setMonthKey}
+              entries={monthEntries}
+              loading={monthLoading}
+              error={monthError}
             />
 
             <MyEntriesList entries={entries} projects={projects} onSaved={refresh} />
